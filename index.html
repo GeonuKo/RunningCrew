@@ -4,79 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>도림천 러닝 크루</title>
-</head>
-<body style="margin: 0; font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; line-height: 1.6; color: #333;">
-
-    <div style="display: flex; min-height: 100vh;">
+    <style>
+        /* 기본 스타일 */
+        body { margin: 0; font-family: sans-serif; line-height: 1.6; color: #333; }
+        .container { display: flex; min-height: 100vh; flex-direction: row; }
         
-        <!-- 사이드바 메뉴 -->
-        <div style="width: 220px; background-color: #2c3e50; color: white; padding: 20px;">
-            <h2 style="border-bottom: 1px solid #555; padding-bottom: 10px;">Menu</h2>
-            <ul style="list-style: none; padding: 0;">
-                <li style="margin: 20px 0;">
-                    <a href="#" onclick="showCourse()" style="color: white; text-decoration: none; font-weight: bold;">1. 추천 러닝 코스</a>
-                </li>
-                <li style="margin: 20px 0;">
-                    <a href="#" onclick="showFood()" style="color: white; text-decoration: none; font-weight: bold;">2. 맛집 리스트</a>
-                </li>
+        /* 사이드바 스타일 */
+        .sidebar { width: 220px; background-color: #2c3e50; color: white; padding: 20px; flex-shrink: 0; }
+        .sidebar h2 { border-bottom: 1px solid #555; padding-bottom: 10px; }
+        .sidebar ul { list-style: none; padding: 0; }
+        .sidebar li { margin: 20px 0; }
+        .sidebar a { color: white; text-decoration: none; font-weight: bold; display: block; padding: 10px 0; }
+
+        /* 메인 콘텐츠 스타일 */
+        .content { flex: 1; padding: 30px; background-color: #ffffff; }
+        h1 { font-size: 1.8em; }
+        h2 { font-size: 1.5em; color: #2c3e50; }
+
+        /* [모바일 최적화 핵심] 화면 너비가 768px 이하일 때 적용 */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; } /* 가로 배치를 세로로 변경 */
+            .sidebar { width: 100%; box-sizing: border-box; height: auto; padding: 10px 20px; }
+            .sidebar h2 { font-size: 1.2em; margin: 10px 0; border: none; }
+            .sidebar ul { display: flex; gap: 15px; margin: 0; } /* 메뉴를 가로로 나열 */
+            .sidebar li { margin: 5px 0; }
+            .content { padding: 20px; }
+            h2 { font-size: 1.3em; } /* 모바일에서 제목 크기 살짝 축소 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 사이드바 -->
+        <div class="sidebar">
+            <h2>Menu</h2>
+            <ul>
+                <li><a href="#" onclick="showCourse()">1. 러닝 코스</a></li>
+                <li><a href="#" onclick="showFood()">2. 맛집 리스트</a></li>
             </ul>
         </div>
 
-        <!-- 메인 콘텐츠 화면 -->
-        <div id="content" style="flex: 1; padding: 40px; background-color: #ffffff; max-width: 800px;">
-            <h1>🏃‍♂️ 우리 러닝 크루 홈페이지</h1>
-            <p>사이드바 메뉴를 눌러 정보를 확인하세요!</p>
+        <!-- 메인 콘텐츠 -->
+        <div id="content" class="content">
+            <h1>🏃‍♂️ 도림천 러닝 크루</h1>
+            <p>메뉴를 눌러 정보를 확인하세요!</p>
         </div>
-
     </div>
 
-    <!-- 기능 동작(JavaScript) -->
     <script>
         const contentDiv = document.getElementById('content');
 
         function showCourse() {
             contentDiv.innerHTML = `
-                <h1 style="color: #2c3e50;">🌉 추천 러닝 코스</h1>
-                <p style="font-size: 1.1em;"><strong>도림천 5km 직선 코스</strong></p>
-                <p>신도림역에서 구로디지털단지역 방향이 평탄해서 뛰기 좋아요! 야간에도 조명이 잘 되어 있어 안전합니다.</p>
+                <h2>🌉 추천 러닝 코스</h2>
+                <p><strong>도림천 5km 직선 코스</strong></p>
+                <p>신도림역 ~ 구로디지털단지역 구간이 평탄해서 초보자에게도 좋습니다.</p>
             `;
+            window.scrollTo(0, 0); // 메뉴 클릭 시 화면 상단으로 이동
         }
 
         function showFood() {
             contentDiv.innerHTML = `
-                <h1 style="color: #2c3e50;">🍲 맛집 리스트</h1>
-                <p>러닝 후 최고의 보상! 크루원들이 강력 추천하는 맛집 정보입니다.</p>
-                
-                <!-- 1. 기절초풍왕순대 -->
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-                <h2 style="font-size: 2em; margin-bottom: 10px;">기절초풍왕순대</h2>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🍴 메뉴:</strong> 순대국, 머리고기, 모둠순대</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>📍 위치:</strong> 서울 관악구 봉천로 62길 2</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>⏰ 영업시간:</strong> 매일 07:00 ~ 21:30</p>
-                <p style="font-size: 1.1em; margin: 15px 0;">
-                    <strong>🔗 지도:</strong> <a href="https://map.naver.com/p/entry/place/18709584" target="_blank" style="color: #03c75a; font-weight: bold;">네이버 지도로 보기</a>
-                </p>
+                <h2>🍲 맛집 리스트</h2>
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                <h3>기절초풍왕순대</h3>
+                <p>🍴 순대국, 모둠순대<br>📍 관악구 봉천로 62길 2</p>
+                <a href="https://map.naver.com/p/entry/place/18709584" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
 
-                <!-- 2. 체부동 잔치집 -->
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-                <h2 style="font-size: 2em; margin-bottom: 10px;">체부동 잔치집</h2>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🍴 메뉴:</strong> 잔치국수, 들깨칼국수, 해물파전</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>📍 위치:</strong> 서울 종로구 자하문로1길 16</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>⏰ 영업시간:</strong> 매일 10:00 ~ 22:00</p>
-                <p style="font-size: 1.1em; margin: 15px 0;">
-                    <strong>🔗 지도:</strong> <a href="https://map.naver.com/p/entry/place/13156385" target="_blank" style="color: #03c75a; font-weight: bold;">네이버 지도로 보기</a>
-                </p>
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                <h3>체부동 잔치집</h3>
+                <p>🍴 잔치국수, 해물파전<br>📍 종로구 자하문로1길 16</p>
+                <a href="https://map.naver.com/p/entry/place/13156385" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
 
-                <!-- 3. 원조마늘곱창 문래본점 -->
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 30px 0;">
-                <h2 style="font-size: 2em; margin-bottom: 10px;">원조마늘곱창 문래본점</h2>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🍴 메뉴:</strong> 마늘곱창, 황소곱창, 대창, 막창</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>📍 위치:</strong> 서울 영등포구 경인로79길 17-1 (문래역 7번 출구 인근)</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>⏰ 영업시간:</strong> 월~금 16:00 ~ 23:00 / 토~일 12:30 ~ 23:00</p>
-                <p style="font-size: 1.1em; margin: 15px 0;">
-                    <strong>🔗 지도:</strong> <a href="https://map.naver.com/p/entry/place/1999481194" target="_blank" style="color: #03c75a; font-weight: bold;">네이버 지도로 보기</a>
-                </p>
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                <h3>원조마늘곱창</h3>
+                <p>🍴 마늘곱창, 대창<br>📍 영등포구 경인로79길 17-1</p>
+                <a href="https://map.naver.com/p/entry/place/1999481194" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
             `;
+            window.scrollTo(0, 0);
         }
     </script>
 
