@@ -21,6 +21,11 @@
         h1 { font-size: 1.8em; }
         h2 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; }
         h3 { font-size: 2em; color: #2c3e50; margin-top: 20px; margin-bottom: 10px; }
+        
+        /* 러닝 일지 전용 스타일 */
+        .log-entry { margin-bottom: 40px; }
+        .log-info { font-size: 1.1em; margin: 5px 0; }
+        .log-info strong { color: #2c3e50; }
 
         /* 모바일 최적화 */
         @media (max-width: 768px) {
@@ -42,6 +47,8 @@
             <ul>
                 <li><a href="#" onclick="showCourse()">1. 러닝 코스</a></li>
                 <li><a href="#" onclick="showFood()">2. 맛집 리스트</a></li>
+                <!-- 3. 러닝 일지 메뉴 추가 -->
+                <li><a href="#" onclick="showLog()">3. 러닝 일지</a></li>
             </ul>
         </div>
 
@@ -59,30 +66,26 @@
             contentDiv.innerHTML = `
                 <h2>🌉 추천 러닝 코스</h2>
                 <p>크루원들이 즐겨 찾는 베스트 코스 3곳입니다.</p>
-                
-                <!-- 1. 고구마런 -->
                 <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
                 <h3>고구마런</h3>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>📏 거리:</strong> 8km</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🚩 시작지점:</strong> 여의나루역</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🏁 종료지점:</strong> 여의나루역</p>
-                <p style="font-size: 1.1em; margin: 10px 0;"><strong>📝 코스설명:</strong> 여의나루역을 출발해 여의도 한바퀴를 뛰는 코스입니다. 경로가 고구마를 닮아 인기가 많습니다.</p>
+                <p class="log-info"><strong>📏 거리:</strong> 8km</p>
+                <p class="log-info"><strong>🚩 시작지점:</strong> 여의나루역</p>
+                <p class="log-info"><strong>🏁 종료지점:</strong> 여의나루역</p>
+                <p class="log-info"><strong>📝 코스설명:</strong> 여의나루역을 출발해 여의도 한바퀴를 뛰는 코스입니다. 경로가 고구마를 닮아 인기가 많습니다.</p>
 
-                <!-- 2. 안양천 코스 -->
                 <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
                 <h3>안양천 코스</h3>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>📏 거리:</strong> 6~10km</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🚩 시작지점:</strong> 신도림역</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🏁 종료지점:</strong> 신도림역</p>
-                <p style="font-size: 1.1em; margin: 10px 0;"><strong>📝 코스설명:</strong> 신도림역에서 출발해 도림천을 따라 뛰다가 안양천과 만나는 지점에서 안양천으로 진입하여 뛰는 코스입니다.</p>
+                <p class="log-info"><strong>📏 거리:</strong> 6~10km</p>
+                <p class="log-info"><strong>🚩 시작지점:</strong> 신도림역</p>
+                <p class="log-info"><strong>🏁 종료지점:</strong> 신도림역</p>
+                <p class="log-info"><strong>📝 코스설명:</strong> 신도림역에서 출발해 도림천을 따라 뛰다가 안양천과 만나는 지점에서 안양천으로 진입하여 뛰는 코스입니다.</p>
 
-                <!-- 3. 도림천 코스 -->
                 <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
                 <h3>도림천 코스</h3>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>📏 거리:</strong> 6km</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🚩 시작지점:</strong> 신림역</p>
-                <p style="font-size: 1.1em; margin: 5px 0;"><strong>🏁 종료지점:</strong> 신도림역</p>
-                <p style="font-size: 1.1em; margin: 10px 0;"><strong>📝 코스설명:</strong> 신림역을 출발해 도림천 물길을 따라 신도림역까지 쭉 뛰는 기분 좋은 편도 코스입니다.</p>
+                <p class="log-info"><strong>📏 거리:</strong> 6km</p>
+                <p class="log-info"><strong>🚩 시작지점:</strong> 신림역</p>
+                <p class="log-info"><strong>🏁 종료지점:</strong> 신도림역</p>
+                <p class="log-info"><strong>📝 코스설명:</strong> 신림역을 출발해 도림천 물길을 따라 신도림역까지 쭉 뛰는 기분 좋은 편도 코스입니다.</p>
             `;
             window.scrollTo(0, 0);
         }
@@ -91,7 +94,6 @@
             contentDiv.innerHTML = `
                 <h2>🍲 맛집 리스트</h2>
                 <p>러닝 후 최고의 보상! 크루 추천 맛집입니다.</p>
-                
                 <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
                 <h3>기절초풍왕순대</h3>
                 <p>🍴 순대국, 모둠순대<br>📍 관악구 봉천로 62길 2</p>
@@ -106,6 +108,34 @@
                 <h3>원조마늘곱창 문래본점</h3>
                 <p>🍴 마늘곱창, 대창<br>📍 영등포구 경인로79길 17-1</p>
                 <a href="https://map.naver.com/p/entry/place/1999481194" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
+            `;
+            window.scrollTo(0, 0);
+        }
+
+        // 새롭게 추가된 러닝 일지 함수
+        function showLog() {
+            contentDiv.innerHTML = `
+                <h2>📅 러닝 일지</h2>
+                <p>우리의 땀방울이 기록된 소중한 일지입니다.</p>
+                
+                <!-- 제1회 정기러닝 -->
+                <div class="log-entry">
+                    <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                    <h3 style="font-weight: bold;">제1회 정기러닝 (2026.03.23)</h3>
+                    <p class="log-info"><strong>👥 참석자:</strong> 고건우, 오지완, 김민형, 오동학, 양원아, 김효진</p>
+                    <p class="log-info"><strong>📏 거리:</strong> 8km</p>
+                    <p class="log-info"><strong>⏱️ 페이스:</strong> 6:21/km</p>
+                    <p class="log-info"><strong>🗺️ 코스:</strong> 신림역출발 도림천 왕복 코스</p>
+                </div>
+
+                <!-- 번개런 -->
+                <div class="log-entry">
+                    <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                    <h3 style="font-weight: bold;">번개런 (2026.04.03)</h3>
+                    <p class="log-info"><strong>👥 참석자:</strong> 양원아, 김효진</p>
+                    <p class="log-info"><strong>⏱️ 페이스:</strong> 6:30/km</p>
+                    <p class="log-info"><strong>🗺️ 코스:</strong> 신림역 - 관악산역 왕복코스</p>
+                </div>
             `;
             window.scrollTo(0, 0);
         }
