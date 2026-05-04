@@ -13,26 +13,30 @@
         .sidebar li { margin: 20px 0; }
         .sidebar a { color: white; text-decoration: none; font-weight: bold; display: block; padding: 10px 0; }
         .content { flex: 1; padding: 30px; background-color: #ffffff; }
-        h2 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; }
-        h3 { font-size: 1.5em; color: #2c3e50; margin-top: 20px; }
+        h2 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; border-left: 5px solid #2c3e50; padding-left: 10px; }
+        h3 { font-size: 1.5em; color: #2c3e50; margin-top: 30px; }
 
-        /* 투표 시스템 스타일 */
-        .vote-section { background: #f8f9fa; padding: 25px; border-radius: 15px; border: 1px solid #e9ecef; margin-bottom: 30px; }
-        .best-day { background: #fff3cd; border: 2px dashed #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        .date-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; margin: 20px 0; }
-        .date-item { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; transition: 0.2s; }
-        .date-item.selected { border-color: #2c3e50; background: #e9ecef; }
-        .date-item .count { display: block; font-size: 1.2em; color: #2c3e50; font-weight: bold; }
+        /* 공통 스타일 */
+        .box { background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px solid #e9ecef; margin-bottom: 30px; }
+        .log-info { font-size: 1.1em; margin: 8px 0; border-bottom: 1px solid #eee; padding-bottom: 8px; }
         
-        .name-input-group { margin-bottom: 20px; display: flex; gap: 10px; }
-        .name-input-group input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; }
-        .name-input-group button { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        /* 투표 시스템 스타일 */
+        .best-day { background: #fff3cd; border: 2px dashed #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+        .date-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin: 20px 0; }
+        .date-item { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; }
+        .date-item.selected { border-color: #2c3e50; background: #e9ecef; outline: 2px solid #2c3e50; }
+        .date-item .count { display: block; font-size: 1.1em; color: #2c3e50; font-weight: bold; }
+        
+        .name-group { margin-bottom: 20px; display: flex; gap: 10px; }
+        .name-group input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; }
+        .name-group button { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
 
-        .log-info { font-size: 1.1em; margin: 5px 0; }
+        .attendance-tag { background: #e9ecef; padding: 5px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .del-btn { background: #ccc; color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; cursor: pointer; }
 
         @media (max-width: 768px) {
             .container { flex-direction: column; }
-            .sidebar { width: 100%; box-sizing: border-box; height: auto; }
+            .sidebar { width: 100%; box-sizing: border-box; }
             .sidebar ul { display: flex; gap: 15px; overflow-x: auto; }
             .content { padding: 20px; }
         }
@@ -47,151 +51,211 @@
                 <li><a href="#" onclick="showCourse()">1. 러닝 코스</a></li>
                 <li><a href="#" onclick="showFood()">2. 맛집 리스트</a></li>
                 <li><a href="#" onclick="showLog()">3. 러닝 일지</a></li>
+                <li><a href="#" onclick="showSchedule()">4. 러닝 스케줄 투표</a></li>
             </ul>
         </div>
         <div id="content" class="content">
             <h1>🏃‍♂️ 도림천 러닝 크루</h1>
-            <p>메뉴를 선택해 주세요.</p>
+            <p>환영합니다! 왼쪽 메뉴를 선택해 주세요.</p>
         </div>
     </div>
 
     <script>
         const contentDiv = document.getElementById('content');
         
-        // ⚠️ 본인의 Firebase URL로 수정하세요.
-        const DB_BASE_URL = "https://dorim-run-crew-default-rtdb.firebaseio.com/schedule_votes";
+        // ⚠️ Firebase URL (데이터 분리를 위해 경로 지정)
+        const DB_BASE = "https://dorim-run-crew-default-rtdb.firebaseio.com";
+        const DB_SCHEDULE = `${DB_BASE}/schedule_votes.json`; // 날짜 조율
+        const DB_ATTENDANCE = `${DB_BASE}/fixed_attendance.json`; // 확정 일정 참석
 
-        let selectedDates = [];
+        let tempSelectedDates = [];
 
+        // 1. 러닝 코스 (복원 완료)
         function showCourse() {
-            contentDiv.innerHTML = `<h2>🌉 추천 러닝 코스</h2><p>고구마런, 안양천, 도림천 코스가 준비되어 있습니다.</p>`;
+            contentDiv.innerHTML = `
+                <h2>🌉 추천 러닝 코스</h2>
+                <div class="box">
+                    <h3>고구마런 (8km)</h3>
+                    <p>🚩 시작/종료: 여의나루역</p>
+                    <p>📝 여의도를 크게 한 바퀴 도는 코스로 모양이 고구마를 닮아 인기가 많습니다.</p>
+                </div>
+                <div class="box">
+                    <h3>안양천 코스 (6~10km)</h3>
+                    <p>🚩 시작/종료: 신도림역</p>
+                    <p>📝 도림천을 따라 안양천 합수부까지 달리는 개방감 좋은 코스입니다.</p>
+                </div>
+                <div class="box">
+                    <h3>도림천 코스 (6km)</h3>
+                    <p>🚩 신림역 → 신도림역 (편도)</p>
+                    <p>📝 물길을 따라 평탄하게 달릴 수 있어 초보자에게도 좋습니다.</p>
+                </div>
+            `;
+            window.scrollTo(0, 0);
         }
 
+        // 2. 맛집 리스트 (복원 완료)
         function showFood() {
-            contentDiv.innerHTML = `<h2>🍲 맛집 리스트</h2><p>기절초풍왕순대, 체부동 잔치집 등 추천 맛집입니다.</p>`;
+            contentDiv.innerHTML = `
+                <h2>🍲 크루 추천 맛집</h2>
+                <div class="box">
+                    <h3>기절초풍왕순대</h3>
+                    <p>🍴 순대국, 모둠순대 | 📍 관악구 봉천로 62길 2</p>
+                    <a href="https://map.naver.com/p/entry/place/18709584" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
+                </div>
+                <div class="box">
+                    <h3>체부동 잔치집</h3>
+                    <p>🍴 잔치국수, 해물파전 | 📍 종로구 자하문로1길 16</p>
+                    <a href="https://map.naver.com/p/entry/place/13156385" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
+                </div>
+                <div class="box">
+                    <h3>원조마늘곱창 문래본점</h3>
+                    <p>🍴 마늘곱창, 대창 | 📍 영등포구 경인로79길 17-1</p>
+                    <a href="https://map.naver.com/p/entry/place/1999481194" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
+                </div>
+            `;
+            window.scrollTo(0, 0);
         }
 
-        // --- 일정 투표 로직 ---
-
+        // 3. 러닝 일지 (과거 기록만)
         function showLog() {
             contentDiv.innerHTML = `
-                <h2>📅 러닝 일정 투표</h2>
-                <p>이번 주 정기러닝, 언제 뛰면 좋을까요? 가능한 날짜를 모두 선택해 주세요!</p>
-
-                <div class="vote-section">
-                    <div id="bestDayAlert" class="best-day">투표 데이터를 불러오는 중...</div>
-
-                    <div class="name-input-group">
-                        <input type="text" id="voterName" placeholder="본인 이름 입력">
-                        <button onclick="submitVote()">투표하기</button>
-                    </div>
-
-                    <div class="date-grid" id="dateGrid"></div>
-                    <p style="font-size: 0.8em; color: #666;">* 날짜를 클릭하여 중복 선택이 가능합니다.</p>
+                <h2>📅 과거 러닝 일지</h2>
+                <div class="box">
+                    <p class="log-info"><strong>제1회 정기러닝 (2026.03.23)</strong></p>
+                    <p>참석자: 고건우, 오지완, 김민형, 오동학, 양원아, 김효진</p>
+                    <p>거리: 8km | 페이스: 6:21/km | 코스: 도림천 왕복</p>
                 </div>
-
-                <h3>과거 러닝 기록</h3>
-                <p class="log-info">제1회 정기러닝 (03.23) - 8km (6:21/km)</p>
-                <p class="log-info">번개런 (04.03) - 신림-관악산 (6:30/km)</p>
+                <div class="box">
+                    <p class="log-info"><strong>번개런 (2026.04.03)</strong></p>
+                    <p>참석자: 양원아, 김효진</p>
+                    <p>거리: 약 5km | 페이스: 6:30/km | 코스: 신림-관악산역 왕복</p>
+                </div>
             `;
-            renderDateGrid();
-            loadVotes();
+            window.scrollTo(0, 0);
         }
 
-        // 오늘 기준으로 7일치 날짜 생성
+        // 4. 러닝 스케줄 투표 (통합 페이지)
+        function showSchedule() {
+            contentDiv.innerHTML = `
+                <h2>📝 러닝 스케줄 투표</h2>
+                
+                <!-- 파트 A: 날짜 조율 -->
+                <div class="vote-section">
+                    <h3>1. 언제 뛰면 좋을까요? (일정 조율)</h3>
+                    <div id="bestDayAlert" class="best-day">데이터를 계산 중...</div>
+                    <div class="name-group">
+                        <input type="text" id="voterName" placeholder="본인 이름">
+                        <button onclick="submitSchedule()">투표하기</button>
+                    </div>
+                    <div class="date-grid" id="dateGrid"></div>
+                </div>
+
+                <hr style="margin:40px 0; border:0; border-top:1px solid #eee;">
+
+                <!-- 파트 B: 확정 일정 참석 투표 -->
+                <div class="vote-section">
+                    <h3>2. 이번 주 확정 일정 참석 여부</h3>
+                    <div class="box" style="background:#fff;">
+                        <p><strong>일시:</strong> 2026.05.08(금) 저녁 8시</p>
+                        <p><strong>코스:</strong> 고구마런 (8km)</p>
+                        <div class="name-group" style="margin-top:15px;">
+                            <input type="text" id="attenderName" placeholder="참석자 이름">
+                            <button onclick="submitAttendance()" style="background:#03c75a;">참석 확정</button>
+                        </div>
+                        <strong>참석 확정 명단:</strong>
+                        <div id="fixedList" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
+                    </div>
+                </div>
+            `;
+            renderDateGrid();
+            loadScheduleVotes();
+            loadFixedAttendance();
+            window.scrollTo(0, 0);
+        }
+
+        // --- 일정 조율 로직 ---
         function getNext7Days() {
             const days = [];
             const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
             for (let i = 1; i <= 7; i++) {
-                const date = new Date();
-                date.setDate(date.getDate() + i);
-                const dateStr = `${date.getMonth() + 1}/${date.getDate()}(${dayNames[date.getDay()]})`;
-                days.push(dateStr);
+                const d = new Date();
+                d.setDate(d.getDate() + i);
+                days.push(`${d.getMonth() + 1}/${d.getDate()}(${dayNames[d.getDay()]})`);
             }
             return days;
         }
 
         function renderDateGrid() {
             const grid = document.getElementById('dateGrid');
+            if (!grid) return;
             const dates = getNext7Days();
-            grid.innerHTML = "";
-            dates.forEach(date => {
-                const div = document.createElement('div');
-                div.className = 'date-item';
-                div.id = `date-${date}`;
-                div.innerHTML = `<span>${date}</span><span class="count" id="count-${date}">0명</span>`;
-                div.onclick = () => toggleDate(date);
-                grid.appendChild(div);
+            dates.forEach(d => {
+                const item = document.createElement('div');
+                item.className = 'date-item';
+                item.id = `date-${d}`;
+                item.innerHTML = `<span>${d}</span><span class="count" id="count-${d}">0명</span>`;
+                item.onclick = () => {
+                    item.classList.toggle('selected');
+                    if(tempSelectedDates.includes(d)) tempSelectedDates = tempSelectedDates.filter(v=>v!==d);
+                    else tempSelectedDates.push(d);
+                };
+                grid.appendChild(item);
             });
         }
 
-        function toggleDate(date) {
-            const el = document.getElementById(`date-${date}`);
-            if (selectedDates.includes(date)) {
-                selectedDates = selectedDates.filter(d => d !== date);
-                el.classList.remove('selected');
-            } else {
-                selectedDates.push(date);
-                el.classList.add('selected');
+        async function submitSchedule() {
+            const name = document.getElementById('voterName').value.trim();
+            if(!name || tempSelectedDates.length === 0) return alert("이름과 날짜를 확인해주세요!");
+            await fetch(DB_SCHEDULE, { method:'POST', body: JSON.stringify({name, dates: tempSelectedDates}) });
+            alert("조율 투표 완료!");
+            tempSelectedDates = [];
+            showSchedule();
+        }
+
+        async function loadScheduleVotes() {
+            const res = await fetch(DB_SCHEDULE);
+            const data = await res.json();
+            if(!data) { document.getElementById('bestDayAlert').innerText="아직 투표가 없습니다."; return; }
+            const counts = {};
+            getNext7Days().forEach(d => counts[d] = 0);
+            Object.values(data).forEach(v => v.dates.forEach(d => { if(counts[d]!==undefined) counts[d]++; }));
+            
+            let max = 0; let best = "";
+            for(let d in counts) {
+                document.getElementById(`count-${d}`).innerText = `${counts[d]}명`;
+                if(counts[d] > max) { max = counts[d]; best = d; }
+            }
+            document.getElementById('bestDayAlert').innerHTML = max > 0 ? `⭐ 가장 많이 모일 수 있는 날: <span style="color:red">${best}</span> (${max}명)` : "가장 좋은 날을 골라보세요!";
+        }
+
+        // --- 확정 참석 로직 ---
+        async function submitAttendance() {
+            const name = document.getElementById('attenderName').value.trim();
+            if(!name) return alert("이름을 입력하세요!");
+            await fetch(DB_ATTENDANCE, { method:'POST', body: JSON.stringify({name}) });
+            showSchedule();
+        }
+
+        async function loadFixedAttendance() {
+            const res = await fetch(DB_ATTENDANCE);
+            const data = await res.json();
+            const list = document.getElementById('fixedList');
+            if(!list) return;
+            list.innerHTML = data ? "" : "아직 참석자가 없습니다.";
+            if(data) {
+                Object.entries(data).forEach(([id, v]) => {
+                    const span = document.createElement('span');
+                    span.className = 'attendance-tag';
+                    span.innerHTML = `${v.name} <button class="del-btn" onclick="deleteFixed('${id}')">x</button>`;
+                    list.appendChild(span);
+                });
             }
         }
 
-        async function submitVote() {
-            const name = document.getElementById('voterName').value.trim();
-            if (!name) return alert("이름을 입력해주세요!");
-            if (selectedDates.length === 0) return alert("가능한 날짜를 하나 이상 선택해주세요!");
-
-            try {
-                await fetch(`${DB_BASE_URL}.json`, {
-                    method: 'POST',
-                    body: JSON.stringify({ name: name, dates: selectedDates })
-                });
-                alert("투표가 완료되었습니다!");
-                selectedDates = [];
-                document.getElementById('voterName').value = "";
-                showLog(); // 화면 새로고침
-            } catch (e) { alert("투표 실패!"); }
-        }
-
-        async function loadVotes() {
-            try {
-                const response = await fetch(`${DB_BASE_URL}.json`);
-                const data = await response.json();
-                if (!data) {
-                    document.getElementById('bestDayAlert').innerText = "아직 투표 결과가 없습니다.";
-                    return;
-                }
-
-                const counts = {};
-                const next7Days = getNext7Days();
-                next7Days.forEach(d => counts[d] = 0);
-
-                Object.values(data).forEach(vote => {
-                    vote.dates.forEach(d => {
-                        if (counts[d] !== undefined) counts[d]++;
-                    });
-                });
-
-                let maxCount = 0;
-                let bestDay = "";
-
-                next7Days.forEach(d => {
-                    const countEl = document.getElementById(`count-${d}`);
-                    if (countEl) countEl.innerText = `${counts[d]}명`;
-                    
-                    if (counts[d] > maxCount) {
-                        maxCount = counts[d];
-                        bestDay = d;
-                    }
-                });
-
-                const alertEl = document.getElementById('bestDayAlert');
-                if (maxCount > 0) {
-                    alertEl.innerHTML = `⭐ 현재 가장 많이 모일 수 있는 날은 <span style="color:#d9480f; font-size:1.2em;">${bestDay}</span> (${maxCount}명) 입니다!`;
-                } else {
-                    alertEl.innerText = "투표를 통해 최적의 러닝 날짜를 찾아보세요!";
-                }
-            } catch (e) { console.error(e); }
+        async function deleteFixed(id) {
+            if(!confirm("참석을 취소하시겠습니까?")) return;
+            await fetch(`${DB_BASE}/fixed_attendance/${id}.json`, { method:'DELETE' });
+            showSchedule();
         }
     </script>
 </body>
