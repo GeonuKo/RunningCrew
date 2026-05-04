@@ -5,39 +5,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>도림천 러닝 크루</title>
     <style>
-        body { margin: 0; font-family: 'Pretendard', sans-serif; line-height: 1.6; color: #333; }
+        /* 기본 레이아웃 */
+        body { margin: 0; font-family: 'Pretendard', -apple-system, sans-serif; line-height: 1.6; color: #333; background-color: #f0f2f5; }
         .container { display: flex; min-height: 100vh; flex-direction: row; }
-        .sidebar { width: 220px; background-color: #2c3e50; color: white; padding: 20px; flex-shrink: 0; }
-        .sidebar h2 { border-bottom: 1px solid #555; padding-bottom: 10px; }
+        
+        /* 사이드바 */
+        .sidebar { width: 240px; background-color: #2c3e50; color: white; padding: 25px; flex-shrink: 0; position: sticky; top: 0; height: 100vh; box-sizing: border-box; }
+        .sidebar h2 { font-size: 1.4em; border-bottom: 2px solid #34495e; padding-bottom: 15px; margin-bottom: 20px; }
         .sidebar ul { list-style: none; padding: 0; }
-        .sidebar li { margin: 20px 0; }
-        .sidebar a { color: white; text-decoration: none; font-weight: bold; display: block; padding: 10px 0; }
-        .content { flex: 1; padding: 30px; background-color: #ffffff; }
-        h2 { font-size: 1.8em; color: #2c3e50; margin-bottom: 10px; border-left: 5px solid #2c3e50; padding-left: 10px; }
-        h3 { font-size: 1.5em; color: #2c3e50; margin-top: 30px; }
+        .sidebar li { margin-bottom: 10px; }
+        .sidebar a { color: #bdc3c7; text-decoration: none; font-weight: 600; display: block; padding: 12px 15px; border-radius: 8px; transition: 0.3s; }
+        .sidebar a:hover { background-color: #34495e; color: white; }
 
-        /* 공통 스타일 */
-        .box { background: #f8f9fa; padding: 20px; border-radius: 12px; border: 1px solid #e9ecef; margin-bottom: 30px; }
-        .log-info { font-size: 1.1em; margin: 8px 0; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+        /* 메인 콘텐츠 */
+        .content { flex: 1; padding: 40px; background-color: #ffffff; min-width: 0; }
+        h2 { font-size: 2em; color: #2c3e50; margin-bottom: 25px; display: flex; align-items: center; gap: 10px; }
+        .box { background: #f8f9fa; padding: 25px; border-radius: 15px; border: 1px solid #e9ecef; margin-bottom: 30px; }
         
         /* 투표 시스템 스타일 */
-        .best-day { background: #fff3cd; border: 2px dashed #ffc107; padding: 15px; border-radius: 10px; margin-bottom: 20px; text-align: center; font-weight: bold; }
-        .date-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; margin: 20px 0; }
-        .date-item { background: white; border: 1px solid #ddd; padding: 10px; border-radius: 8px; text-align: center; cursor: pointer; }
-        .date-item.selected { border-color: #2c3e50; background: #e9ecef; outline: 2px solid #2c3e50; }
-        .date-item .count { display: block; font-size: 1.1em; color: #2c3e50; font-weight: bold; }
+        .vote-section { margin-bottom: 40px; }
+        .best-day { background: #fff3cd; border: 2px dashed #ffc107; padding: 15px; border-radius: 12px; margin-bottom: 20px; text-align: center; font-weight: bold; font-size: 1.1em; color: #856404; }
+        .date-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 10px; margin: 20px 0; }
+        .date-item { background: white; border: 2px solid #eee; padding: 12px; border-radius: 10px; text-align: center; cursor: pointer; transition: 0.2s; }
+        .date-item.selected { border-color: #2c3e50; background-color: #e9ecef; box-shadow: inset 0 0 5px rgba(0,0,0,0.1); }
+        .date-item .count { display: block; font-size: 1.2em; color: #2c3e50; font-weight: bold; margin-top: 5px; }
         
-        .name-group { margin-bottom: 20px; display: flex; gap: 10px; }
-        .name-group input { padding: 10px; border: 1px solid #ccc; border-radius: 5px; flex: 1; }
-        .name-group button { padding: 10px 20px; background: #2c3e50; color: white; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        .input-group input { flex: 1; padding: 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1em; }
+        .input-group button { padding: 12px 25px; background-color: #2c3e50; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
 
-        .attendance-tag { background: #e9ecef; padding: 5px 12px; border-radius: 20px; font-size: 0.9em; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .del-btn { background: #ccc; color: white; border: none; border-radius: 50%; width: 16px; height: 16px; font-size: 10px; cursor: pointer; }
+        /* 갤러리 스타일 */
+        .gallery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .gallery-card { background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; aspect-ratio: 1 / 1; }
+        .gallery-card img { width: 100%; height: 100%; object-fit: cover; }
+        .del-photo { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.6); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; cursor: pointer; font-size: 14px; }
+        
+        .upload-area { border: 3px dashed #cbd5e0; padding: 40px; text-align: center; border-radius: 20px; background: #edf2f7; margin-bottom: 30px; }
+        .upload-label { background: #2c3e50; color: white; padding: 12px 30px; border-radius: 30px; cursor: pointer; font-weight: bold; display: inline-block; }
 
+        /* 태그 스타일 */
+        .name-tag { background: #e2e8f0; padding: 6px 15px; border-radius: 20px; font-weight: bold; display: flex; align-items: center; gap: 8px; font-size: 0.9em; }
+        .tag-container { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px; }
+
+        /* 모바일 대응 */
         @media (max-width: 768px) {
             .container { flex-direction: column; }
-            .sidebar { width: 100%; box-sizing: border-box; }
-            .sidebar ul { display: flex; gap: 15px; overflow-x: auto; }
+            .sidebar { width: 100%; height: auto; position: relative; padding: 15px; }
+            .sidebar ul { display: flex; overflow-x: auto; gap: 10px; }
+            .sidebar li { margin-bottom: 0; flex-shrink: 0; }
             .content { padding: 20px; }
         }
     </style>
@@ -46,158 +61,116 @@
 
     <div class="container">
         <div class="sidebar">
-            <h2>Menu</h2>
+            <h2>RUN CREW</h2>
             <ul>
-                <li><a href="#" onclick="showCourse()">1. 러닝 코스</a></li>
-                <li><a href="#" onclick="showFood()">2. 맛집 리스트</a></li>
-                <li><a href="#" onclick="showLog()">3. 러닝 일지</a></li>
-                <li><a href="#" onclick="showSchedule()">4. 러닝 스케줄 투표</a></li>
+                <li><a href="#" onclick="showCourse()">🗺️ 러닝 코스</a></li>
+                <li><a href="#" onclick="showFood()">🍲 맛집 리스트</a></li>
+                <li><a href="#" onclick="showLog()">📖 러닝 일지</a></li>
+                <li><a href="#" onclick="showSchedule()">📅 스케줄 투표</a></li>
+                <li><a href="#" onclick="showGallery()">📸 갤러리</a></li>
             </ul>
         </div>
+
         <div id="content" class="content">
-            <h1>🏃‍♂️ 도림천 러닝 크루</h1>
-            <p>환영합니다! 왼쪽 메뉴를 선택해 주세요.</p>
+            <h1>🏃‍♂️ 도림천 러닝 크루 관리 시스템</h1>
+            <p>메뉴를 클릭하여 크루 활동을 관리하세요.</p>
         </div>
     </div>
 
     <script>
         const contentDiv = document.getElementById('content');
         
-        // ⚠️ Firebase URL (데이터 분리를 위해 경로 지정)
+        // ⚠️ Firebase URL 설정
         const DB_BASE = "https://dorim-run-crew-default-rtdb.firebaseio.com";
-        const DB_SCHEDULE = `${DB_BASE}/schedule_votes.json`; // 날짜 조율
-        const DB_ATTENDANCE = `${DB_BASE}/fixed_attendance.json`; // 확정 일정 참석
+        const ENDPOINTS = {
+            schedule: `${DB_BASE}/schedule_votes.json`,
+            fixed: `${DB_BASE}/fixed_attendance.json`,
+            gallery: `${DB_BASE}/gallery.json`
+        };
 
-        let tempSelectedDates = [];
+        let selectedDates = [];
 
-        // 1. 러닝 코스 (복원 완료)
+        // 1. 러닝 코스
         function showCourse() {
             contentDiv.innerHTML = `
-                <h2>🌉 추천 러닝 코스</h2>
-                <div class="box">
-                    <h3>고구마런 (8km)</h3>
-                    <p>🚩 시작/종료: 여의나루역</p>
-                    <p>📝 여의도를 크게 한 바퀴 도는 코스로 모양이 고구마를 닮아 인기가 많습니다.</p>
-                </div>
-                <div class="box">
-                    <h3>안양천 코스 (6~10km)</h3>
-                    <p>🚩 시작/종료: 신도림역</p>
-                    <p>📝 도림천을 따라 안양천 합수부까지 달리는 개방감 좋은 코스입니다.</p>
-                </div>
-                <div class="box">
-                    <h3>도림천 코스 (6km)</h3>
-                    <p>🚩 신림역 → 신도림역 (편도)</p>
-                    <p>📝 물길을 따라 평탄하게 달릴 수 있어 초보자에게도 좋습니다.</p>
-                </div>
+                <h2>🗺️ 추천 러닝 코스</h2>
+                <div class="box"><h3>고구마런 (8.0km)</h3><p>여의나루역 기점 여의도 순환 코스. 지형이 고구마를 닮아 붙여진 이름입니다.</p></div>
+                <div class="box"><h3>안양천 코스 (6.0~10.0km)</h3><p>신도림역에서 출발해 안양천 합수부까지 직선으로 뻗은 쾌적한 코스입니다.</p></div>
+                <div class="box"><h3>도림천 코스 (6.0km)</h3><p>신림역에서 신도림역까지 물길을 따라가는 평탄한 코스입니다.</p></div>
             `;
-            window.scrollTo(0, 0);
         }
 
-        // 2. 맛집 리스트 (복원 완료)
+        // 2. 맛집 리스트
         function showFood() {
             contentDiv.innerHTML = `
                 <h2>🍲 크루 추천 맛집</h2>
-                <div class="box">
-                    <h3>기절초풍왕순대</h3>
-                    <p>🍴 순대국, 모둠순대 | 📍 관악구 봉천로 62길 2</p>
-                    <a href="https://map.naver.com/p/entry/place/18709584" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
-                </div>
-                <div class="box">
-                    <h3>체부동 잔치집</h3>
-                    <p>🍴 잔치국수, 해물파전 | 📍 종로구 자하문로1길 16</p>
-                    <a href="https://map.naver.com/p/entry/place/13156385" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
-                </div>
-                <div class="box">
-                    <h3>원조마늘곱창 문래본점</h3>
-                    <p>🍴 마늘곱창, 대창 | 📍 영등포구 경인로79길 17-1</p>
-                    <a href="https://map.naver.com/p/entry/place/1999481194" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
-                </div>
+                <div class="box"><h3>기절초풍왕순대</h3><p>📍 관악구 봉천로 62길 2<br>러닝 후 뜨끈한 순대국과 모둠순대는 최고의 보상입니다.</p><a href="https://map.naver.com/p/entry/place/18709584" target="_blank" style="color:#03c75a; font-weight:bold;">네이버 지도 열기</a></div>
+                <div class="box"><h3>체부동 잔치집</h3><p>📍 종로구 자하문로1길 16<br>가성비 넘치는 잔치국수와 두툼한 해물파전이 일품입니다.</p><a href="https://map.naver.com/p/entry/place/13156385" target="_blank" style="color:#03c75a; font-weight:bold;">네이버 지도 열기</a></div>
+                <div class="box"><h3>원조마늘곱창 문래본점</h3><p>📍 영등포구 경인로79길 17-1<br>풍부한 마늘향이 입혀진 곱창으로 원기 회복하기 좋습니다.</p><a href="https://map.naver.com/p/entry/place/1999481194" target="_blank" style="color:#03c75a; font-weight:bold;">네이버 지도 열기</a></div>
             `;
-            window.scrollTo(0, 0);
         }
 
-        // 3. 러닝 일지 (과거 기록만)
+        // 3. 러닝 일지 (과거 기록)
         function showLog() {
             contentDiv.innerHTML = `
-                <h2>📅 과거 러닝 일지</h2>
-                <div class="box">
-                    <p class="log-info"><strong>제1회 정기러닝 (2026.03.23)</strong></p>
-                    <p>참석자: 고건우, 오지완, 김민형, 오동학, 양원아, 김효진</p>
-                    <p>거리: 8km | 페이스: 6:21/km | 코스: 도림천 왕복</p>
-                </div>
-                <div class="box">
-                    <p class="log-info"><strong>번개런 (2026.04.03)</strong></p>
-                    <p>참석자: 양원아, 김효진</p>
-                    <p>거리: 약 5km | 페이스: 6:30/km | 코스: 신림-관악산역 왕복</p>
-                </div>
+                <h2>📖 과거 러닝 기록</h2>
+                <div class="box"><strong>제1회 정기러닝 (2026.03.23)</strong><br>참석: 고건우, 오지완, 김민형, 오동학, 양원아, 김효진<br>기록: 8km / 페이스 6:21/km</div>
+                <div class="box"><strong>번개런 (2026.04.03)</strong><br>참석: 양원아, 김효진<br>기록: 5km / 페이스 6:30/km</div>
             `;
-            window.scrollTo(0, 0);
         }
 
-        // 4. 러닝 스케줄 투표 (통합 페이지)
+        // 4. 스케줄 투표 (조율 + 확정 참석)
         function showSchedule() {
             contentDiv.innerHTML = `
-                <h2>📝 러닝 스케줄 투표</h2>
-                
-                <!-- 파트 A: 날짜 조율 -->
+                <h2>📅 러닝 스케줄 투표</h2>
                 <div class="vote-section">
-                    <h3>1. 언제 뛰면 좋을까요? (일정 조율)</h3>
-                    <div id="bestDayAlert" class="best-day">데이터를 계산 중...</div>
-                    <div class="name-group">
-                        <input type="text" id="voterName" placeholder="본인 이름">
-                        <button onclick="submitSchedule()">투표하기</button>
+                    <h3>🗓️ 일정 조율 (중복 선택 가능)</h3>
+                    <div id="bestDayAlert" class="best-day">투표 데이터를 집계 중입니다...</div>
+                    <div class="input-group">
+                        <input type="text" id="voterName" placeholder="이름 입력">
+                        <button onclick="submitSchedule()">투표 제출</button>
                     </div>
                     <div class="date-grid" id="dateGrid"></div>
                 </div>
-
-                <hr style="margin:40px 0; border:0; border-top:1px solid #eee;">
-
-                <!-- 파트 B: 확정 일정 참석 투표 -->
+                <hr style="border:0; border-top:1px solid #eee; margin:40px 0;">
                 <div class="vote-section">
-                    <h3>2. 이번 주 확정 일정 참석 여부</h3>
-                    <div class="box" style="background:#fff;">
-                        <p><strong>일시:</strong> 2026.05.08(금) 저녁 8시</p>
-                        <p><strong>코스:</strong> 고구마런 (8km)</p>
-                        <div class="name-group" style="margin-top:15px;">
-                            <input type="text" id="attenderName" placeholder="참석자 이름">
-                            <button onclick="submitAttendance()" style="background:#03c75a;">참석 확정</button>
+                    <h3>✅ 이번 주 확정 일정 참석 투표</h3>
+                    <div class="box" style="background:white;">
+                        <p><strong>일시:</strong> 2026.05.08(금) 20:00 / <strong>코스:</strong> 고구마런</p>
+                        <div class="input-group">
+                            <input type="text" id="fixedName" placeholder="참석자 이름">
+                            <button onclick="submitFixed()" style="background:#03c75a;">참석 확정</button>
                         </div>
-                        <strong>참석 확정 명단:</strong>
-                        <div id="fixedList" style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;"></div>
+                        <div class="tag-container" id="fixedList"></div>
                     </div>
                 </div>
             `;
             renderDateGrid();
-            loadScheduleVotes();
-            loadFixedAttendance();
-            window.scrollTo(0, 0);
+            loadSchedule();
+            loadFixed();
         }
 
-        // --- 일정 조율 로직 ---
         function getNext7Days() {
             const days = [];
-            const dayNames = ['일', '월', '화', '수', '목', '금', '토'];
+            const labels = ['일', '월', '화', '수', '목', '금', '토'];
             for (let i = 1; i <= 7; i++) {
-                const d = new Date();
-                d.setDate(d.getDate() + i);
-                days.push(`${d.getMonth() + 1}/${d.getDate()}(${dayNames[d.getDay()]})`);
+                const d = new Date(); d.setDate(d.getDate() + i);
+                days.push(`${d.getMonth() + 1}/${d.getDate()}(${labels[d.getDay()]})`);
             }
             return days;
         }
 
         function renderDateGrid() {
             const grid = document.getElementById('dateGrid');
-            if (!grid) return;
-            const dates = getNext7Days();
-            dates.forEach(d => {
+            selectedDates = [];
+            getNext7Days().forEach(date => {
                 const item = document.createElement('div');
                 item.className = 'date-item';
-                item.id = `date-${d}`;
-                item.innerHTML = `<span>${d}</span><span class="count" id="count-${d}">0명</span>`;
+                item.innerHTML = `<span>${date}</span><span class="count" id="count-${date}">0명</span>`;
                 item.onclick = () => {
                     item.classList.toggle('selected');
-                    if(tempSelectedDates.includes(d)) tempSelectedDates = tempSelectedDates.filter(v=>v!==d);
-                    else tempSelectedDates.push(d);
+                    if(selectedDates.includes(date)) selectedDates = selectedDates.filter(d => d !== date);
+                    else selectedDates.push(date);
                 };
                 grid.appendChild(item);
             });
@@ -205,57 +178,105 @@
 
         async function submitSchedule() {
             const name = document.getElementById('voterName').value.trim();
-            if(!name || tempSelectedDates.length === 0) return alert("이름과 날짜를 확인해주세요!");
-            await fetch(DB_SCHEDULE, { method:'POST', body: JSON.stringify({name, dates: tempSelectedDates}) });
-            alert("조율 투표 완료!");
-            tempSelectedDates = [];
+            if(!name || selectedDates.length === 0) return alert("이름과 날짜를 선택해주세요.");
+            await fetch(ENDPOINTS.schedule, { method: 'POST', body: JSON.stringify({ name, dates: selectedDates }) });
             showSchedule();
         }
 
-        async function loadScheduleVotes() {
-            const res = await fetch(DB_SCHEDULE);
+        async function loadSchedule() {
+            const res = await fetch(ENDPOINTS.schedule);
             const data = await res.json();
-            if(!data) { document.getElementById('bestDayAlert').innerText="아직 투표가 없습니다."; return; }
+            if(!data) { document.getElementById('bestDayAlert').innerText = "현재 투표가 없습니다."; return; }
+            
             const counts = {};
             getNext7Days().forEach(d => counts[d] = 0);
-            Object.values(data).forEach(v => v.dates.forEach(d => { if(counts[d]!==undefined) counts[d]++; }));
-            
-            let max = 0; let best = "";
-            for(let d in counts) {
-                document.getElementById(`count-${d}`).innerText = `${counts[d]}명`;
+            Object.values(data).forEach(v => v.dates.forEach(d => { if(counts[d] !== undefined) counts[d]++; }));
+
+            let max = 0, best = "";
+            for(const d in counts) {
+                const el = document.getElementById(`count-${d}`);
+                if(el) el.innerText = `${counts[d]}명`;
                 if(counts[d] > max) { max = counts[d]; best = d; }
             }
-            document.getElementById('bestDayAlert').innerHTML = max > 0 ? `⭐ 가장 많이 모일 수 있는 날: <span style="color:red">${best}</span> (${max}명)` : "가장 좋은 날을 골라보세요!";
+            document.getElementById('bestDayAlert').innerHTML = max > 0 ? `🔥 베스트 매칭: <strong>${best}</strong> (${max}명 참여 가능)` : "참여 가능한 날을 골라주세요!";
         }
 
-        // --- 확정 참석 로직 ---
-        async function submitAttendance() {
-            const name = document.getElementById('attenderName').value.trim();
-            if(!name) return alert("이름을 입력하세요!");
-            await fetch(DB_ATTENDANCE, { method:'POST', body: JSON.stringify({name}) });
+        async function submitFixed() {
+            const name = document.getElementById('fixedName').value.trim();
+            if(!name) return alert("이름을 입력하세요.");
+            await fetch(ENDPOINTS.fixed, { method: 'POST', body: JSON.stringify({ name }) });
             showSchedule();
         }
 
-        async function loadFixedAttendance() {
-            const res = await fetch(DB_ATTENDANCE);
+        async function loadFixed() {
+            const res = await fetch(ENDPOINTS.fixed);
             const data = await res.json();
-            const list = document.getElementById('fixedList');
-            if(!list) return;
-            list.innerHTML = data ? "" : "아직 참석자가 없습니다.";
-            if(data) {
-                Object.entries(data).forEach(([id, v]) => {
-                    const span = document.createElement('span');
-                    span.className = 'attendance-tag';
-                    span.innerHTML = `${v.name} <button class="del-btn" onclick="deleteFixed('${id}')">x</button>`;
-                    list.appendChild(span);
-                });
-            }
+            const container = document.getElementById('fixedList');
+            if(!data) { container.innerHTML = "<span style='color:#999'>아직 참석자가 없습니다.</span>"; return; }
+            Object.entries(data).forEach(([id, v]) => {
+                const tag = document.createElement('span');
+                tag.className = 'name-tag';
+                tag.innerHTML = `${v.name} <button class="del-photo" style="position:static; width:18px; height:18px; font-size:10px;" onclick="deleteFixed('${id}')">x</button>`;
+                container.appendChild(tag);
+            });
         }
 
         async function deleteFixed(id) {
-            if(!confirm("참석을 취소하시겠습니까?")) return;
-            await fetch(`${DB_BASE}/fixed_attendance/${id}.json`, { method:'DELETE' });
-            showSchedule();
+            if(confirm("참석을 취소하시겠습니까?")) {
+                await fetch(`${DB_BASE}/fixed_attendance/${id}.json`, { method: 'DELETE' });
+                showSchedule();
+            }
+        }
+
+        // 5. 갤러리 (Base64 방식)
+        function showGallery() {
+            contentDiv.innerHTML = `
+                <h2>📸 크루 갤러리</h2>
+                <div class="upload-area">
+                    <p>카카오톡에서 받은 러닝 사진을 업로드하세요.</p>
+                    <label for="imgInput" class="upload-label">사진 선택 (다중 선택 가능)</label>
+                    <input type="file" id="imgInput" accept="image/*" multiple style="display:none;" onchange="uploadImages(event)">
+                </div>
+                <div class="gallery-grid" id="galleryGrid"></div>
+            `;
+            loadGallery();
+        }
+
+        async function uploadImages(event) {
+            const files = event.target.files;
+            for(let file of files) {
+                const reader = new FileReader();
+                reader.onload = async (e) => {
+                    const base64 = e.target.result;
+                    await fetch(ENDPOINTS.gallery, {
+                        method: 'POST',
+                        body: JSON.stringify({ image: base64, time: new Date().getTime() })
+                    });
+                    loadGallery();
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function loadGallery() {
+            const res = await fetch(ENDPOINTS.gallery);
+            const data = await res.json();
+            const grid = document.getElementById('galleryGrid');
+            grid.innerHTML = "";
+            if(!data) { grid.innerHTML = "<p>등록된 사진이 없습니다.</p>"; return; }
+            Object.entries(data).reverse().forEach(([id, v]) => {
+                const card = document.createElement('div');
+                card.className = 'gallery-card';
+                card.innerHTML = `<img src="${v.image}"><button class="del-photo" onclick="deletePhoto('${id}')">×</button>`;
+                grid.appendChild(card);
+            });
+        }
+
+        async function deletePhoto(id) {
+            if(confirm("사진을 삭제하시겠습니까?")) {
+                await fetch(`${DB_BASE}/gallery/${id}.json`, { method: 'DELETE' });
+                loadGallery();
+            }
         }
     </script>
 </body>
