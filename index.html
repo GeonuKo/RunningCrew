@@ -23,12 +23,35 @@
         h3 { font-size: 2em; color: #2c3e50; margin-top: 20px; margin-bottom: 10px; }
         
         /* 러닝 일지 및 투표 스타일 */
-        .log-entry { margin-bottom: 40px; }
-        .log-info { font-size: 1.1em; margin: 5px 0; }
-        .log-info strong { color: #2c3e50; }
-        
         .vote-box { background-color: #f8f9fa; padding: 25px; border-radius: 12px; border: 1px solid #dee2e6; margin-bottom: 30px; }
-        .attendance-tag { background: #e9ecef; padding: 6px 14px; border-radius: 20px; font-size: 0.9em; font-weight: bold; color: #495057; }
+        
+        /* 참석자 태그 스타일 (취소 버튼 포함) */
+        .attendance-tag { 
+            background: #e9ecef; 
+            padding: 6px 14px; 
+            border-radius: 20px; 
+            font-size: 0.9em; 
+            font-weight: bold; 
+            color: #495057;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .delete-btn {
+            background: #adb5bd;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 12px;
+            cursor: pointer;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .delete-btn:hover { background: #fa5252; }
 
         /* 모바일 최적화 */
         @media (max-width: 768px) {
@@ -44,7 +67,6 @@
 <body>
 
     <div class="container">
-        <!-- 사이드바 -->
         <div class="sidebar">
             <h2>Menu</h2>
             <ul>
@@ -54,46 +76,29 @@
             </ul>
         </div>
 
-        <!-- 메인 콘텐츠 -->
         <div id="content" class="content">
             <h1>🏃‍♂️ 도림천 러닝 크루</h1>
-            <p>환영합니다! 메뉴를 눌러 우리 크루의 정보를 확인하세요.</p>
+            <p>환영합니다! 메뉴를 눌러 정보를 확인하세요.</p>
         </div>
     </div>
 
     <script>
         const contentDiv = document.getElementById('content');
         
-        // ⚠️ 주의: 반드시 본인의 Firebase 주소 끝에 /attendance.json 을 붙여주세요.
-        const DB_URL = "https://dorim-run-crew-default-rtdb.firebaseio.com/attendance.json";
+        // ⚠️ 주의: 반드시 본인의 Firebase 주소로 유지하세요.
+        const DB_BASE_URL = "https://dorim-run-crew-default-rtdb.firebaseio.com/attendance";
+        const DB_JSON_URL = `${DB_BASE_URL}.json`;
 
-        // 1. 코스 페이지
         function showCourse() {
-            contentDiv.innerHTML = `
-                <h2>🌉 추천 러닝 코스</h2>
-                <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
-                <h3>고구마런</h3>
-                <p class="log-info"><strong>📏 거리:</strong> 8km | <strong>🚩 여의나루역 시작</strong></p>
-                <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
-                <h3>도림천 코스</h3>
-                <p class="log-info"><strong>📏 거리:</strong> 6km | <strong>🚩 신림역 - 신도림역</strong></p>
-            `;
+            contentDiv.innerHTML = `<h2>🌉 추천 러닝 코스</h2><p>크루원들이 즐겨 찾는 코스입니다.</p>`;
             window.scrollTo(0, 0);
         }
 
-        // 2. 맛집 페이지
         function showFood() {
-            contentDiv.innerHTML = `
-                <h2>🍲 맛집 리스트</h2>
-                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-                <h3>기절초풍왕순대</h3>
-                <p>📍 관악구 봉천로 62길 2</p>
-                <a href="https://map.naver.com/p/entry/place/18709584" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
-            `;
+            contentDiv.innerHTML = `<h2>🍲 맛집 리스트</h2><p>러닝 후 최고의 보상!</p>`;
             window.scrollTo(0, 0);
         }
 
-        // 3. 러닝 일지 및 실시간 투표 페이지
         function showLog() {
             contentDiv.innerHTML = `
                 <h2>📅 러닝 일지 & 참여 투표</h2>
@@ -115,33 +120,34 @@
                     </div>
                 </div>
 
-                <div class="log-entry">
-                    <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
-                    <h3 style="font-weight: bold;">제1회 정기러닝 (2026.03.23)</h3>
-                    <p class="log-info"><strong>👥 참석자:</strong> 고건우, 오지완, 김민형, 오동학, 양원아, 김효진</p>
-                    <p class="log-info"><strong>📏 거리:</strong> 8km | <strong>⏱️ 페이스:</strong> 6:21/km</p>
+                <div style="color: #666; font-size: 0.8em; margin-top: -20px; margin-bottom: 30px;">
+                    * 본인 이름 옆의 x 버튼을 누르면 취소할 수 있습니다.
                 </div>
             `;
-            loadAttendance(); // 페이지 로드 시 Firebase 데이터 가져오기
+            loadAttendance();
             window.scrollTo(0, 0);
         }
 
-        // Firebase 데이터 불러오기 함수
+        // 데이터 불러오기 (ID 포함)
         async function loadAttendance() {
             const list = document.getElementById('attendanceList');
             if (!list) return;
 
             try {
-                const response = await fetch(DB_URL);
+                const response = await fetch(DB_JSON_URL);
                 const data = await response.json();
                 
                 list.innerHTML = ""; 
 
                 if (data) {
-                    Object.values(data).forEach(user => {
+                    // Object.entries를 사용해 [ID, 데이터] 쌍을 가져옵니다.
+                    Object.entries(data).forEach(([id, user]) => {
                         const li = document.createElement('li');
                         li.className = "attendance-tag";
-                        li.innerText = `🏃‍♂️ ${user.name}`;
+                        li.innerHTML = `
+                            🏃‍♂️ ${user.name}
+                            <button class="delete-btn" onclick="deleteAttendance('${id}', '${user.name}')">×</button>
+                        `;
                         list.appendChild(li);
                     });
                 } else {
@@ -152,7 +158,7 @@
             }
         }
 
-        // Firebase 데이터 저장 함수
+        // 참석 신청
         async function addAttendance() {
             const input = document.getElementById('userName');
             const name = input.value.trim();
@@ -163,18 +169,40 @@
             }
 
             try {
-                const response = await fetch(DB_URL, {
+                const response = await fetch(DB_JSON_URL, {
                     method: 'POST',
                     body: JSON.stringify({ name: name, time: new Date().toISOString() })
                 });
 
                 if (response.ok) {
-                    alert(name + "님, 신청 완료!");
                     input.value = "";
-                    loadAttendance(); // 목록 새로고침
+                    loadAttendance();
                 }
             } catch (e) {
                 alert("신청 실패!");
+            }
+        }
+
+        // ❌ 참석 취소 함수 (추가됨)
+        async function deleteAttendance(id, name) {
+            if (!confirm(`${name}님의 참석 신청을 취소하시겠습니까?`)) {
+                return;
+            }
+
+            try {
+                // 특정 ID의 데이터를 삭제하기 위해 URL 뒤에 ID를 붙입니다.
+                const response = await fetch(`${DB_BASE_URL}/${id}.json`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert("취소되었습니다.");
+                    loadAttendance(); // 목록 새로고침
+                } else {
+                    alert("취소 처리 중 오류가 발생했습니다.");
+                }
+            } catch (e) {
+                alert("서버 연결 실패!");
             }
         }
     </script>
