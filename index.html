@@ -24,8 +24,10 @@
         
         /* 러닝 일지 및 투표 스타일 */
         .vote-box { background-color: #f8f9fa; padding: 25px; border-radius: 12px; border: 1px solid #dee2e6; margin-bottom: 30px; }
+        .log-info { font-size: 1.1em; margin: 5px 0; }
+        .log-info strong { color: #2c3e50; }
         
-        /* 참석자 태그 스타일 (취소 버튼 포함) */
+        /* 참석자 태그 스타일 */
         .attendance-tag { 
             background: #e9ecef; 
             padding: 6px 14px; 
@@ -67,6 +69,7 @@
 <body>
 
     <div class="container">
+        <!-- 사이드바 -->
         <div class="sidebar">
             <h2>Menu</h2>
             <ul>
@@ -76,29 +79,75 @@
             </ul>
         </div>
 
+        <!-- 메인 콘텐츠 -->
         <div id="content" class="content">
             <h1>🏃‍♂️ 도림천 러닝 크루</h1>
-            <p>환영합니다! 메뉴를 눌러 정보를 확인하세요.</p>
+            <p>메뉴를 눌러 정보를 확인하세요!</p>
         </div>
     </div>
 
     <script>
         const contentDiv = document.getElementById('content');
         
-        // ⚠️ 주의: 반드시 본인의 Firebase 주소로 유지하세요.
+        // ⚠️ Firebase 주소 설정
         const DB_BASE_URL = "https://dorim-run-crew-default-rtdb.firebaseio.com/attendance";
         const DB_JSON_URL = `${DB_BASE_URL}.json`;
 
+        // 1. 러닝 코스 복원
         function showCourse() {
-            contentDiv.innerHTML = `<h2>🌉 추천 러닝 코스</h2><p>크루원들이 즐겨 찾는 코스입니다.</p>`;
+            contentDiv.innerHTML = `
+                <h2>🌉 추천 러닝 코스</h2>
+                <p>크루원들이 즐겨 찾는 베스트 코스 3곳입니다.</p>
+                
+                <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                <h3>고구마런</h3>
+                <p class="log-info"><strong>📏 거리:</strong> 8km</p>
+                <p class="log-info"><strong>🚩 시작지점:</strong> 여의나루역</p>
+                <p class="log-info"><strong>🏁 종료지점:</strong> 여의나루역</p>
+                <p class="log-info"><strong>📝 코스설명:</strong> 여의나루역을 출발해 여의도 한바퀴를 뛰는 코스입니다. 경로가 고구마를 닮아 인기가 많습니다.</p>
+
+                <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                <h3>안양천 코스</h3>
+                <p class="log-info"><strong>📏 거리:</strong> 6~10km</p>
+                <p class="log-info"><strong>🚩 시작지점:</strong> 신도림역</p>
+                <p class="log-info"><strong>🏁 종료지점:</strong> 신도림역</p>
+                <p class="log-info"><strong>📝 코스설명:</strong> 신도림역에서 출발해 도림천을 따라 뛰다가 안양천과 만나는 지점에서 안양천으로 진입하여 뛰는 코스입니다.</p>
+
+                <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                <h3>도림천 코스</h3>
+                <p class="log-info"><strong>📏 거리:</strong> 6km</p>
+                <p class="log-info"><strong>🚩 시작지점:</strong> 신림역</p>
+                <p class="log-info"><strong>🏁 종료지점:</strong> 신도림역</p>
+                <p class="log-info"><strong>📝 코스설명:</strong> 신림역을 출발해 도림천 물길을 따라 신도림역까지 쭉 뛰는 기분 좋은 편도 코스입니다.</p>
+            `;
             window.scrollTo(0, 0);
         }
 
+        // 2. 맛집 리스트 복원
         function showFood() {
-            contentDiv.innerHTML = `<h2>🍲 맛집 리스트</h2><p>러닝 후 최고의 보상!</p>`;
+            contentDiv.innerHTML = `
+                <h2>🍲 맛집 리스트</h2>
+                <p>러닝 후 최고의 보상! 크루 추천 맛집입니다.</p>
+                
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                <h3>기절초풍왕순대</h3>
+                <p>🍴 순대국, 모둠순대<br>📍 관악구 봉천로 62길 2</p>
+                <a href="https://map.naver.com/p/entry/place/18709584" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
+
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                <h3>체부동 잔치집</h3>
+                <p>🍴 잔치국수, 해물파전<br>📍 종로구 자하문로1길 16</p>
+                <a href="https://map.naver.com/p/entry/place/13156385" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
+
+                <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
+                <h3>원조마늘곱창 문래본점</h3>
+                <p>🍴 마늘곱창, 대창<br>📍 영등포구 경인로79길 17-1</p>
+                <a href="https://map.naver.com/p/entry/place/1999481194" target="_blank" style="color:#03c75a; font-weight:bold;">지도 보기</a>
+            `;
             window.scrollTo(0, 0);
         }
 
+        // 3. 러닝 일지 및 투표 기능
         function showLog() {
             contentDiv.innerHTML = `
                 <h2>📅 러닝 일지 & 참여 투표</h2>
@@ -120,90 +169,66 @@
                     </div>
                 </div>
 
-                <div style="color: #666; font-size: 0.8em; margin-top: -20px; margin-bottom: 30px;">
-                    * 본인 이름 옆의 x 버튼을 누르면 취소할 수 있습니다.
+                <div class="log-entry">
+                    <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                    <h3 style="font-weight: bold;">제1회 정기러닝 (2026.03.23)</h3>
+                    <p class="log-info"><strong>👥 참석자:</strong> 고건우, 오지완, 김민형, 오동학, 양원아, 김효진</p>
+                    <p class="log-info"><strong>📏 거리:</strong> 8km | <strong>⏱️ 페이스:</strong> 6:21/km</p>
+                    <p class="log-info"><strong>🗺️ 코스:</strong> 신림역출발 도림천 왕복 코스</p>
+
+                    <hr style="border:0; border-top:1px solid #eee; margin:30px 0;">
+                    <h3 style="font-weight: bold;">번개런 (2026.04.03)</h3>
+                    <p class="log-info"><strong>👥 참석자:</strong> 양원아, 김효진</p>
+                    <p class="log-info"><strong>⏱️ 페이스:</strong> 6:30/km</p>
+                    <p class="log-info"><strong>🗺️ 코스:</strong> 신림역 - 관악산역 왕복코스</p>
                 </div>
             `;
             loadAttendance();
             window.scrollTo(0, 0);
         }
 
-        // 데이터 불러오기 (ID 포함)
+        // Firebase 데이터 로드
         async function loadAttendance() {
             const list = document.getElementById('attendanceList');
             if (!list) return;
-
             try {
                 const response = await fetch(DB_JSON_URL);
                 const data = await response.json();
-                
                 list.innerHTML = ""; 
-
                 if (data) {
-                    // Object.entries를 사용해 [ID, 데이터] 쌍을 가져옵니다.
                     Object.entries(data).forEach(([id, user]) => {
                         const li = document.createElement('li');
                         li.className = "attendance-tag";
-                        li.innerHTML = `
-                            🏃‍♂️ ${user.name}
-                            <button class="delete-btn" onclick="deleteAttendance('${id}', '${user.name}')">×</button>
-                        `;
+                        li.innerHTML = `🏃‍♂️ ${user.name} <button class="delete-btn" onclick="deleteAttendance('${id}', '${user.name}')">×</button>`;
                         list.appendChild(li);
                     });
                 } else {
                     list.innerHTML = "<li style='color:#999;'>첫 번째 참석자가 되어보세요!</li>";
                 }
-            } catch (e) {
-                list.innerHTML = "<li>연결 오류</li>";
-            }
+            } catch (e) { list.innerHTML = "<li>연결 오류</li>"; }
         }
 
         // 참석 신청
         async function addAttendance() {
             const input = document.getElementById('userName');
             const name = input.value.trim();
-
-            if (!name) {
-                alert("이름을 입력해주세요!");
-                return;
-            }
-
+            if (!name) { alert("이름을 입력해주세요!"); return; }
             try {
                 const response = await fetch(DB_JSON_URL, {
                     method: 'POST',
                     body: JSON.stringify({ name: name, time: new Date().toISOString() })
                 });
-
-                if (response.ok) {
-                    input.value = "";
-                    loadAttendance();
-                }
-            } catch (e) {
-                alert("신청 실패!");
-            }
+                if (response.ok) { input.value = ""; loadAttendance(); }
+            } catch (e) { alert("신청 실패!"); }
         }
 
-        // ❌ 참석 취소 함수 (추가됨)
+        // 참석 취소
         async function deleteAttendance(id, name) {
-            if (!confirm(`${name}님의 참석 신청을 취소하시겠습니까?`)) {
-                return;
-            }
-
+            if (!confirm(`${name}님의 참석 신청을 취소하시겠습니까?`)) return;
             try {
-                // 특정 ID의 데이터를 삭제하기 위해 URL 뒤에 ID를 붙입니다.
-                const response = await fetch(`${DB_BASE_URL}/${id}.json`, {
-                    method: 'DELETE'
-                });
-
-                if (response.ok) {
-                    alert("취소되었습니다.");
-                    loadAttendance(); // 목록 새로고침
-                } else {
-                    alert("취소 처리 중 오류가 발생했습니다.");
-                }
-            } catch (e) {
-                alert("서버 연결 실패!");
-            }
+                const response = await fetch(`${DB_BASE_URL}/${id}.json`, { method: 'DELETE' });
+                if (response.ok) { alert("취소되었습니다."); loadAttendance(); }
+            } catch (e) { alert("서버 연결 실패!"); }
         }
     </script>
 
