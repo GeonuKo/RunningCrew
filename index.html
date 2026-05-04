@@ -282,23 +282,34 @@
             });
         }
 
-        async function submitSchedule() {
+async function submitSchedule() {
             const name = document.getElementById('voterName').value.trim();
-            if(!name || selectedDates.length === 0) return alert("이름을 입력하고 날짜를 선택해주세요.");
+            if (!name) return alert("이름을 입력해주세요.");
 
+            // 1. 기존 투표 데이터 확인 및 삭제 로직
             const res = await fetch(ENDPOINTS.schedule);
             const data = await res.json();
-            if(data) {
+            
+            if (data) {
+                // 이전에 동일한 이름으로 투표한 기록 찾기
                 const oldId = Object.keys(data).find(k => data[k].name === name);
-                if(oldId) await fetch(`${DB_BASE}/schedule/${oldId}.json`, { method: 'DELETE' });
+                if (oldId) {
+                    await fetch(`${DB_BASE}/schedule/${oldId}.json`, { method: 'DELETE' });
+                }
             }
 
-            await fetch(ENDPOINTS.schedule, { 
-                method: 'POST', 
-                body: JSON.stringify({ name, dates: selectedDates }) 
-            });
-            alert("투표가 정상적으로 처리되었습니다!");
-            showSchedule();
+            // 2. 날짜를 선택한 경우에만 새로 등록 (선택 안 했으면 삭제만 되고 끝남)
+            if (selectedDates.length > 0) {
+                await fetch(ENDPOINTS.schedule, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ name, dates: selectedDates }) 
+                });
+                alert(`${name}님, 투표가 정상적으로 처리되었습니다!`);
+            } else {
+                alert(`${name}님의 투표 기록이 삭제(미참여) 처리되었습니다.`);
+            }
+
+            showSchedule(); // 화면 새로고침
         }
 
         async function loadSchedule() {
