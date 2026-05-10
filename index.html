@@ -82,6 +82,8 @@
     <script>
         const contentDiv = document.getElementById('content');
         const DB_BASE = "https://dorim-run-crew-default-rtdb.firebaseio.com";
+        
+        // 1. 엔드포인트 설정 (logs 추가 확인)
         const ENDPOINTS = {
             schedule: `${DB_BASE}/schedule.json`,
             fixed: `${DB_BASE}/fixed_attendance.json`,
@@ -92,260 +94,133 @@
         let selectedDates = [];
 
         // --- 1. 러닝 코스 ---
-// --- 1. 러닝 코스 (상세 업데이트) ---
         function showCourse() {
             const courses = [
                 { title: "도림천 비단길 코스", dist: "6.0km", station: "신림역 ↔ 신도림역", desc: "경사가 거의 없고 길이 잘 닦여 있어 초보자에게 최적입니다.", link: "https://search.naver.com/search.naver?query=%EB%8F%84%EB%A6%BC%EC%B2%9C+%EB%9F%AC%EB%8B%9D+%EC%BD%94%EC%8A%A4" },
                 { title: "여의도 고구마런 코스", dist: "8.4km", station: "여의나루역 순환", desc: "한강뷰와 빌딩숲을 동시에 즐기는 서울의 상징적인 코스입니다.", link: "https://search.naver.com/search.naver?query=%EC%97%AC%EC%9D%98%EB%8F%84+%EA%B3%A0%EA%B5%AC%EB%A7%88%EB%9F%B0" },
-                { title: "반포~잠수교 루프 코스", dist: "4.5km", station: "고속터미널역 ↔ 잠수교", desc: "잠수교의 경사도와 무지개 분수 야경을 즐길 수 있는 낭만 코스입니다.", link: "https://search.naver.com/search.naver?query=%EC%9E%A1%EC%88%98%EA%B5%90+%EB%9F%AC%EB%8B%9D+%EC%BD%94%EC%8A%A4" },
-                { title: "석촌호수 거위런 코스", dist: "2.5km (순환)", station: "잠실역 인근", desc: "우레탄 트랙으로 무릎이 편안하며 야경이 매우 아름답습니다.", link: "https://search.naver.com/search.naver?query=%EC%84%9D%EC%B4%8C%ED%98%B8%EC%88%98+%EB%9F%AC%EB%8B%9D+%EC%BD%94%EC%8A%A4" },
-                { title: "상암 평화의공원 코스", dist: "5.0km", station: "월드컵경기장역 인근", desc: "나무가 많아 쾌적하며 코스가 평탄해 일정한 페이스 유지가 쉽습니다.", link: "https://search.naver.com/search.naver?query=%EC%83%81%EC%95%94+%ED%8F%89%ED%99%94%EC%9D%98%EA%B3%B5%EC%9B%90+%EB%9F%AC%EB%8B%9D" },
-                { title: "뚝섬 유원지 코스", dist: "5.0km~10km", station: "자양역 ↔ 성수 구름다리", desc: "탁 트인 한강 직선 코스로 성수동 핫플과 연계하기 좋습니다.", link: "https://search.naver.com/search.naver?query=%EB%9뚝%EC%84%AC%EC%9C%A0%EC%9B%90%EC%A7%80+%EB%9F%AC%EB%8B%9D" },
-                { title: "경의선 숲길 코스", dist: "6.3km", station: "가좌역 ↔ 공덕역", desc: "도심 속 옛 철길 공원 코스로 이른 아침 시티런에 추천합니다.", link: "https://search.naver.com/search.naver?query=%EA%B2%BD%EC%9D%98%EC%84%A0+%EC%88%B2%EA%B8%B8+%EB%9F%AC%EB%8B%9D" },
-                { title: "남산 북측순환로 코스", dist: "7.0km (왕복)", station: "동대입구역 ↔ 남산도서관", desc: "차 없는 산책로와 완만한 오르막으로 훈련 효과가 뛰어납니다.", link: "https://search.naver.com/search.naver?query=%EB%82%A8%EC%82%B0+%EB%B6%81%EC%B8%A1%EC%88%9C%ED%99%98%EB%A1%9C+%EB%9F%AC%EB%8B%9D" },
-                { title: "안양천 합수부 코스", dist: "10.0km", station: "도림천역 ↔ 염창역 인근", desc: "장거리 훈련용으로 최고이며 시원하게 뻗은 직선 구간이 특징입니다.", link: "https://search.naver.com/search.naver?query=%EC%95%88%EC%96%91%EC%B2%9C+%ED%95%A9%EC%88%98%EB%B6%80+%EB%9F%AC%EB%8B%9D" },
-                { title: "청계천 도심 코스", dist: "5.0km~", station: "광화문역 ↔ 신답역", desc: "물소리를 들으며 서울 중심을 뛰는 매력적인 시티러닝 코스입니다.", link: "https://search.naver.com/search.naver?query=%EC%B2%AD%EA%B3%84%EC%B2%9C+%EB%9F%AC%EB%8B%9D+%EC%BD%94%EC%8A%A4" }
+                { title: "반포~잠수교 루프 코스", dist: "4.5km", station: "고속터미널역 ↔ 잠수교", desc: "잠수교의 경사도와 무지개 분수 야경을 즐길 수 있는 낭만 코스입니다.", link: "https://search.naver.com/search.naver?query=%EC%9E%A1%EC%88%98%EA%B5%90+%EB%9F%AC%EB%8B%9D+%EC%BD%94%EC%8A%A4" }
             ];
 
-            let html = `<h2>🗺️ 추천 러닝 코스 TOP 10</h2>`;
+            let html = `<h2>🗺️ 추천 러닝 코스</h2>`;
             courses.forEach(c => {
                 html += `
                     <div class="box">
                         <h3 style="font-size: 1.4em; margin-bottom: 10px;">${c.title}</h3>
-                        <p style="margin: 5px 0;"><strong>📏 거리:</strong> ${c.dist}</p>
-                        <p style="margin: 5px 0;"><strong>🚉 출발/도착:</strong> ${c.station}</p>
-                        <p style="margin: 10px 0;"><strong>📝 간단설명:</strong> ${c.desc}</p>
-                        <a href="${c.link}" target="_blank" style="color: #2c3e50; font-weight: bold; text-decoration: underline;">상세 정보(네이버 검색)</a>
+                        <p><strong>📏 거리:</strong> ${c.dist} / <strong>🚉 역:</strong> ${c.station}</p>
+                        <p>${c.desc}</p>
+                        <a href="${c.link}" target="_blank" style="color: #2c3e50; font-weight: bold;">상세 정보</a>
                     </div>
                 `;
             });
             contentDiv.innerHTML = html;
         }
 
-        // --- 2. 맛집 리스트 (복구 완료) ---
-// --- 2. 맛집 리스트 (식당 정보 수정 완료) ---
+        // --- 2. 맛집 리스트 (여의도/노량진 수정 반영) ---
         function showFood() {
             const restaurants = [
-                { 
-                    name: "취복루", 
-                    menu: "꿔바로우, 양꼬치, 마라탕", 
-                    addr: "서울 동작구 등용로 118 (노량진역-대방역 사이)", 
-                    desc: "노량진과 대방 사이 현지인들이 찾는 중식 맛집입니다. 꿔바로우가 특히 바삭하고 맛있으며 크루 모임 장소로 좋습니다.", 
-                    link: "https://map.naver.com/p/entry/place/21651765" 
-                },
-                { 
-                    name: "농부와 닭동네", 
-                    menu: "치킨, 닭매운탕", 
-                    addr: "서울 영등포구 여의대방로 394 (여의도)", 
-                    desc: "여의도 러너들의 성지! 고구마런 후 즐기는 치킨과 시원한 생맥주 조합은 실패할 수 없는 메뉴입니다.", 
-                    link: "https://map.naver.com/p/entry/place/18578676" 
-                },
-                { 
-                    name: "기절초풍왕순대", 
-                    menu: "순대국, 모둠순대", 
-                    addr: "서울 관악구 봉천로62길 2", 
-                    desc: "낙성대 명물! 막창순대의 쫄깃함이 러닝 후 단백질 보충에 제격입니다.", 
-                    link: "https://map.naver.com/p/entry/place/18709584" 
-                },
-                { 
-                    name: "산골", 
-                    menu: "머고기, 순대국, 모둠안주", 
-                    addr: "서울 관악구 관악로 211 봉천중앙시장 내", 
-                    desc: "시장 노포 감성 가득! 가성비 넘치는 모둠 고기가 일품입니다.", 
-                    link: "https://map.naver.com/p/entry/place/1148669490" 
-                },
-                { 
-                    name: "원조마늘곱창 문래본점", 
-                    menu: "마늘황소곱창, 모둠구이", 
-                    addr: "서울 영등포구 경인로79길 17-1 1층", 
-                    desc: "문래창작촌 핫플! 마늘이 듬뿍 들어간 곱창으로 기력 회복하세요.", 
-                    link: "https://map.naver.com/p/entry/place/1999481194" 
-                },
-                { 
-                    name: "천장어 마포점", 
-                    menu: "풍천민물장어 소금구이", 
-                    addr: "서울 마포구 마포대로 12 한신빌딩 지하 1층", 
-                    desc: "착한 가격의 장어 구이! 장거리 러닝 후 보양식으로 최고입니다.", 
-                    link: "https://map.naver.com/p/entry/place/1651389071" 
-                },
-                { 
-                    name: "체부동 잔치집", 
-                    menu: "잔치국수, 해물파전, 들깨수제비", 
-                    addr: "서울 종로구 자하문로1길 16", 
-                    desc: "서촌의 명물! 가성비 좋고 푸짐한 국수 한 그릇의 행복입니다.", 
-                    link: "https://map.naver.com/p/entry/place/13156385" 
-                },
-                { 
-                    name: "우정", 
-                    menu: "신당동 떡볶이, 닭발", 
-                    addr: "서울 중구 다산로33길 10-1", 
-                    desc: "매콤한 닭발과 즉석 떡볶이로 스트레스를 풀기 좋은 곳입니다.", 
-                    link: "https://map.naver.com/p/entry/place/33878641" 
-                },
-                { 
-                    name: "더빛남", 
-                    menu: "베트남 쌀국수", 
-                    addr: "서울 송파구 오금로18길 5 1층", 
-                    desc: "송리단길 맛집! 석촌호수 러닝 후 뜨끈한 국물로 마무리하세요.", 
-                    link: "https://map.naver.com/p/entry/place/1145587166" 
-                }
+                { name: "취복루", menu: "꿔바로우, 양꼬치", addr: "서울 동작구 등용로 118 (노량진-대방 사이)", desc: "현지 감성 중식 맛집!", link: "https://map.naver.com/p/entry/place/21651765" },
+                { name: "농부와 닭동네", menu: "치킨, 닭매운탕", addr: "서울 영등포구 여의대방로 394 (여의도)", desc: "여의도 러너들의 성지!", link: "https://map.naver.com/p/entry/place/18578676" },
+                { name: "기절초풍왕순대", menu: "순대국", addr: "서울 관악구 봉천로62길 2", desc: "낙성대 명물 막창순대!", link: "https://map.naver.com/p/entry/place/18709584" }
             ];
 
             let html = `<h2>🍲 크루 추천 맛집</h2>`;
             restaurants.forEach(r => {
                 html += `
                     <div class="box">
-                        <h3 style="font-size: 1.5em; margin-bottom: 10px; color: #2c3e50;">${r.name}</h3>
-                        <p style="margin: 5px 0;"><strong>🍴 메뉴:</strong> ${r.menu}</p>
-                        <p style="margin: 5px 0;"><strong>📍 주소:</strong> ${r.addr}</p>
-                        <p style="margin: 10px 0;"><strong>💡 설명:</strong> ${r.desc}</p>
-                        <a href="${r.link}" target="_blank" style="color:#03c75a; font-weight:bold; text-decoration: none; border: 1px solid #03c75a; padding: 4px 8px; border-radius: 4px;">네이버 지도 열기</a>
+                        <h3 style="font-size: 1.5em; color: #2c3e50;">${r.name}</h3>
+                        <p><strong>🍴 메뉴:</strong> ${r.menu} / <strong>📍 주소:</strong> ${r.addr}</p>
+                        <p>${r.desc}</p>
+                        <a href="${r.link}" target="_blank" style="color:#03c75a; font-weight:bold;">네이버 지도</a>
                     </div>
                 `;
             });
             contentDiv.innerHTML = html;
         }
 
-        // --- 3. 러닝 일지 (복구 완료) ---
+        // --- 3. 러닝 일지 (실시간 게시판) ---
         function showLog() {
             contentDiv.innerHTML = `
                 <h2>📖 크루 러닝 일지</h2>
                 <div class="box" style="background: white;">
-                    <h3>✍️ 오늘 나의 러닝 기록하기</h3>
-                    <div style="display: grid; gap: 10px; margin-bottom: 15px;">
-                        <div class="input-group">
-                            <input type="text" id="logName" placeholder="이름" style="flex: 0.3;">
-                            <input type="text" id="logDist" placeholder="거리 (ex: 5km)" style="flex: 0.3;">
-                            <input type="text" id="logPace" placeholder="페이스 (ex: 6:00)" style="flex: 0.4;">
-                        </div>
-                        <input type="text" id="logComment" placeholder="오늘 어떠셨나요? 한 줄 평을 남겨주세요!" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
-                        <button onclick="submitLog()" style="padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">기록 등록하기</button>
+                    <h3>✍️ 기록하기</h3>
+                    <div class="input-group">
+                        <input type="text" id="logName" placeholder="이름" style="flex:0.3;">
+                        <input type="text" id="logDist" placeholder="거리(km)" style="flex:0.3;">
+                        <input type="text" id="logPace" placeholder="페이스" style="flex:0.4;">
                     </div>
+                    <input type="text" id="logComment" placeholder="한 줄 평" style="width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
+                    <button onclick="submitLog()" style="width:100%; padding:12px; background:#2c3e50; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">기록 등록</button>
                 </div>
-                <div id="logList">
-                    <p style="text-align: center; color: #666;">일지를 불러오는 중...</p>
-                </div>
+                <div id="logList"></div>
             `;
             loadLogs();
         }
 
-        // 일지 제출 함수
         async function submitLog() {
             const name = document.getElementById('logName').value.trim();
             const dist = document.getElementById('logDist').value.trim();
             const pace = document.getElementById('logPace').value.trim();
             const comment = document.getElementById('logComment').value.trim();
-
-            if(!name || !dist || !pace) return alert("이름, 거리, 페이스를 모두 입력해주세요!");
-
-            const logData = {
-                name,
-                dist,
-                pace,
-                comment,
-                date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }),
-                timestamp: Date.now()
-            };
+            if(!name || !dist) return alert("이름과 거리를 입력해주세요.");
 
             await fetch(ENDPOINTS.logs, {
                 method: 'POST',
-                body: JSON.stringify(logData)
+                body: JSON.stringify({ name, dist, pace, comment, date: new Date().toLocaleDateString(), timestamp: Date.now() })
             });
-
-            alert("오늘의 러닝 기록이 완료되었습니다! 수고하셨습니다.");
-            showLog(); // 화면 갱신
+            showLog();
         }
 
-        // 일지 불러오기 함수
         async function loadLogs() {
             const res = await fetch(ENDPOINTS.logs);
             const data = await res.json();
             const listDiv = document.getElementById('logList');
-            
             if(!listDiv) return;
             listDiv.innerHTML = "";
-
-            if(!data) {
-                listDiv.innerHTML = "<p style='text-align: center; color: #999; margin-top: 20px;'>아직 등록된 일지가 없습니다. 첫 일지의 주인공이 되어보세요!</p>";
-                return;
-            }
-
-            // 최신순 정렬 후 렌더링
+            if(!data) return listDiv.innerHTML = "<p>첫 일지를 남겨보세요!</p>";
             Object.entries(data).reverse().forEach(([id, log]) => {
-                const logBox = document.createElement('div');
-                logBox.className = 'box';
-                logBox.style.borderLeft = "6px solid #03c75a";
-                logBox.innerHTML = `
-                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
-                        <strong style="font-size: 1.1em;">${log.name} 크루원</strong>
-                        <span style="font-size: 0.85em; color: #888;">${log.date}</span>
-                    </div>
-                    <p style="margin: 5px 0;">🏃‍♂️ <b>기록:</b> ${log.dist} / <b>페이스:</b> ${log.pace}</p>
-                    <p style="margin: 10px 0; color: #444; font-style: italic;">"${log.comment}"</p>
-                    <div style="text-align: right;">
-                        <button onclick="deleteLog('${id}')" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.85em;">삭제</button>
-                    </div>
-                `;
-                listDiv.appendChild(logBox);
+                const b = document.createElement('div'); b.className = 'box'; b.style.borderLeft = "6px solid #03c75a";
+                b.innerHTML = `<strong>${log.name}</strong> (${log.date})<br>🏃‍♂️ ${log.dist} / ${log.pace}<br><i>"${log.comment}"</i>
+                               <div style="text-align:right;"><button onclick="deleteLog('${id}')" style="color:red; border:none; background:none; cursor:pointer;">삭제</button></div>`;
+                listDiv.appendChild(b);
             });
         }
 
-        // 일지 삭제 함수
         async function deleteLog(id) {
-            if(confirm("기록을 삭제하시겠습니까?")) {
-                await fetch(`${DB_BASE}/running_logs/${id}.json`, { method: 'DELETE' });
-                showLog();
-            }
+            if(confirm("삭제할까요?")) { await fetch(`${DB_BASE}/running_logs/${id}.json`, { method: 'DELETE' }); showLog(); }
         }
 
-        // --- 4. 스케줄 투표 (복구 및 기능 추가) ---
+        // --- 4. 스케줄 투표 (10일 확장) ---
         function showSchedule() {
             contentDiv.innerHTML = `
                 <h2>📅 러닝 스케줄 투표</h2>
                 <div class="vote-section">
-                    <h3>🗓️ 일정 조율 (중복 선택 가능)</h3>
-                    <div id="bestDayAlert" class="best-day">투표 데이터를 집계 중입니다...</div>
+                    <div id="bestDayAlert" class="best-day">집계 중...</div>
                     <div class="input-group">
                         <input type="text" id="voterName" placeholder="이름 입력">
                         <button onclick="submitSchedule()">투표 제출</button>
                     </div>
-                    <p class="info-text">💡 <b>투표 수정 안내:</b> 이미 투표하셨더라도, 이전에 입력한 이름과 <b>동일한 이름</b>으로 다시 투표하시면 기존 기록이 자동으로 수정됩니다.</p>
+                    <p class="info-text">💡 이름만 쓰고 제출하면 투표가 취소됩니다.</p>
                     <div class="date-grid" id="dateGrid"></div>
-                </div>
-
-                <hr style="border:0; border-top:1px solid #eee; margin:40px 0;">
-
-                <div class="vote-section">
-                    <h3>✅ 이번 주 확정 일정 참석 투표</h3>
-                    <div class="box" style="background:white;">
-                        <p><strong>일시:</strong> 2026.05.08(금) 20:00 / <strong>코스:</strong> 고구마런</p>
-                        <div class="input-group">
-                            <input type="text" id="fixedName" placeholder="참석자 이름">
-                            <button onclick="submitFixed()" style="background:#03c75a;">참석 확정</button>
-                        </div>
-                        <div class="tag-container" id="fixedList"></div>
-                    </div>
                 </div>
             `;
             renderDateGrid();
             loadSchedule();
-            loadFixed();
         }
 
-        function getNext7Days() {
-            const days = [];
-            const labels = ['일', '월', '화', '수', '목', '금', '토'];
-            for (let i = 1; i <= 7; i++) {
-                const d = new Date(); d.setDate(d.getDate() + i);
-                days.push(`${d.getMonth() + 1}/${d.getDate()}(${labels[d.getDay()]})`);
+        function getNext10Days() {
+            const d = []; const l = ['일','월','화','수','목','금','토'];
+            for(let i=1; i<=10; i++){
+                const target = new Date(); target.setDate(target.getDate()+i);
+                d.push(`${target.getMonth()+1}/${target.getDate()}(${l[target.getDay()]})`);
             }
-            return days;
+            return d;
         }
 
         function renderDateGrid() {
             const grid = document.getElementById('dateGrid');
             selectedDates = [];
-            getNext7Days().forEach(date => {
+            grid.innerHTML = "";
+            getNext10Days().forEach(date => {
                 const item = document.createElement('div');
                 item.className = 'date-item';
                 item.innerHTML = `<span class="date-label">${date}</span><span class="count" id="count-${date}">0명</span><span class="voter-list" id="list-${date}"></span>`;
@@ -358,121 +233,63 @@
             });
         }
 
-async function submitSchedule() {
+        async function submitSchedule() {
             const name = document.getElementById('voterName').value.trim();
-            if (!name) return alert("이름을 입력해주세요.");
-
-            // 1. 기존 투표 데이터 확인 및 삭제 로직
+            if(!name) return alert("이름을 입력하세요.");
             const res = await fetch(ENDPOINTS.schedule);
             const data = await res.json();
-            
-            if (data) {
-                // 이전에 동일한 이름으로 투표한 기록 찾기
+            if(data) {
                 const oldId = Object.keys(data).find(k => data[k].name === name);
-                if (oldId) {
-                    await fetch(`${DB_BASE}/schedule/${oldId}.json`, { method: 'DELETE' });
-                }
+                if(oldId) await fetch(`${DB_BASE}/schedule/${oldId}.json`, { method: 'DELETE' });
             }
-
-            // 2. 날짜를 선택한 경우에만 새로 등록 (선택 안 했으면 삭제만 되고 끝남)
-            if (selectedDates.length > 0) {
-                await fetch(ENDPOINTS.schedule, { 
-                    method: 'POST', 
-                    body: JSON.stringify({ name, dates: selectedDates }) 
-                });
-                alert(`${name}님, 투표가 정상적으로 처리되었습니다!`);
-            } else {
-                alert(`${name}님의 투표 기록이 삭제(미참여) 처리되었습니다.`);
-            }
-
-            showSchedule(); // 화면 새로고침
+            if(selectedDates.length > 0) {
+                await fetch(ENDPOINTS.schedule, { method: 'POST', body: JSON.stringify({ name, dates: selectedDates }) });
+                alert("투표 완료!");
+            } else { alert("투표 취소 처리됨."); }
+            showSchedule();
         }
 
         async function loadSchedule() {
             const res = await fetch(ENDPOINTS.schedule);
             const data = await res.json();
-            if(!data) { document.getElementById('bestDayAlert').innerText = "현재 투표 데이터가 없습니다."; return; }
-            
+            const alertBox = document.getElementById('bestDayAlert');
+            if(!data) { alertBox.innerText = "데이터 없음"; return; }
             const results = {};
-            getNext7Days().forEach(d => results[d] = []);
-            Object.values(data).forEach(v => v.dates.forEach(d => { if(results[d]) results[d].push(v.name); }));
-            
+            getNext10Days().forEach(d => results[d] = []);
+            Object.values(data).forEach(v => { if(v.dates) v.dates.forEach(d => { if(results[d]) results[d].push(v.name); })});
             let max = 0, best = "";
             for(const d in results) {
-                const countEl = document.getElementById(`count-${d}`);
-                const listEl = document.getElementById(`list-${d}`);
-                if(countEl) countEl.innerText = `${results[d].length}명`;
-                if(listEl) listEl.innerText = results[d].join(', ');
+                document.getElementById(`count-${d}`).innerText = `${results[d].length}명`;
+                document.getElementById(`list-${d}`).innerText = results[d].join(', ');
                 if(results[d].length > max) { max = results[d].length; best = d; }
             }
-            document.getElementById('bestDayAlert').innerHTML = max > 0 ? `🔥 베스트 매칭: <strong>${best}</strong> (${max}명 참석 가능)` : "참여 가능한 날을 골라주세요!";
+            alertBox.innerHTML = max > 0 ? `🔥 베스트: ${best} (${max}명)` : "날짜를 골라주세요!";
         }
 
-        // --- 참석 확정 투표 로직 (복구 완료) ---
-        async function submitFixed() {
-            const name = document.getElementById('fixedName').value.trim();
-            if(!name) return alert("참석자 이름을 입력하세요.");
-            await fetch(ENDPOINTS.fixed, { method: 'POST', body: JSON.stringify({ name }) });
-            showSchedule();
-        }
-
-        async function loadFixed() {
-            const res = await fetch(ENDPOINTS.fixed);
-            const data = await res.json();
-            const container = document.getElementById('fixedList');
-            if(!container) return;
-            container.innerHTML = "";
-            if(!data) { container.innerHTML = "<span style='color:#999'>아직 확정된 참석자가 없습니다.</span>"; return; }
-            Object.entries(data).forEach(([id, v]) => {
-                const tag = document.createElement('span');
-                tag.className = 'name-tag';
-                tag.innerHTML = `${v.name} <button onclick="deleteFixed('${id}')" style="background:none; border:none; cursor:pointer; font-weight:bold; color:#e74c3c;">×</button>`;
-                container.appendChild(tag);
-            });
-        }
-
-        async function deleteFixed(id) {
-            if(confirm("참석을 취소하시겠습니까?")) {
-                await fetch(`${DB_BASE}/fixed_attendance/${id}.json`, { method: 'DELETE' });
-                showSchedule();
-            }
-        }
-
-        // --- 5. 갤러리 (압축 업로드 포함) ---
+        // --- 5. 갤러리 ---
         function showGallery() {
-            contentDiv.innerHTML = `
-                <h2>📸 크루 갤러리</h2>
-                <div class="upload-area">
-                    <p>사진을 선택하면 모바일에 최적화되어 업로드됩니다.</p>
-                    <label for="imgInput" class="upload-label">사진 선택하기</label>
-                    <input type="file" id="imgInput" accept="image/*" multiple style="display:none;" onchange="uploadImages(event)">
-                </div>
-                <div class="gallery-grid" id="galleryGrid"></div>
-            `;
+            contentDiv.innerHTML = `<h2>📸 갤러리</h2>
+                <div class="upload-area"><label for="imgInput" class="upload-label">사진 선택</label>
+                <input type="file" id="imgInput" accept="image/*" multiple style="display:none;" onchange="uploadImages(event)"></div>
+                <div class="gallery-grid" id="galleryGrid"></div>`;
             loadGallery();
         }
 
-        async function uploadImages(event) {
-            const files = event.target.files;
-            for(let file of files) {
-                const reader = new FileReader();
-                reader.onload = (e) => {
+        async function uploadImages(e) {
+            for(let f of e.target.files) {
+                const r = new FileReader();
+                r.onload = (ev) => {
                     const img = new Image();
                     img.onload = async () => {
-                        const canvas = document.createElement('canvas');
-                        const MAX_WIDTH = 800; 
-                        let width = img.width, height = img.height;
-                        if (width > MAX_WIDTH) { height *= MAX_WIDTH / width; width = MAX_WIDTH; }
-                        canvas.width = width; canvas.height = height;
-                        canvas.getContext('2d').drawImage(img, 0, 0, width, height);
-                        
-                        const compressed = canvas.toDataURL('image/jpeg', 0.7);
-                        await fetch(ENDPOINTS.gallery, { method: 'POST', body: JSON.stringify({ image: compressed, time: Date.now() }) });
+                        const cvs = document.createElement('canvas');
+                        cvs.width = 800; cvs.height = (img.height * 800) / img.width;
+                        cvs.getContext('2d').drawImage(img, 0, 0, cvs.width, cvs.height);
+                        await fetch(ENDPOINTS.gallery, { method: 'POST', body: JSON.stringify({ image: cvs.toDataURL('image/jpeg', 0.7), time: Date.now() }) });
                         loadGallery();
                     };
-                    img.src = e.target.result;
+                    img.src = ev.target.result;
                 };
-                reader.readAsDataURL(file);
+                r.readAsDataURL(f);
             }
         }
 
@@ -480,21 +297,17 @@ async function submitSchedule() {
             const res = await fetch(ENDPOINTS.gallery);
             const data = await res.json();
             const grid = document.getElementById('galleryGrid');
-            if(!grid) return;
-            grid.innerHTML = "";
-            if(!data) { grid.innerHTML = "<p>등록된 사진이 없습니다.</p>"; return; }
+            if(!grid) return; grid.innerHTML = "";
+            if(!data) return;
             Object.entries(data).reverse().forEach(([id, v]) => {
-                const card = document.createElement('div'); card.className = 'gallery-card';
-                card.innerHTML = `<img src="${v.image}"><button class="del-btn" onclick="deletePhoto('${id}')">×</button>`;
-                grid.appendChild(card);
+                const c = document.createElement('div'); c.className = 'gallery-card';
+                c.innerHTML = `<img src="${v.image}"><button class="del-btn" onclick="deletePhoto('${id}')">×</button>`;
+                grid.appendChild(c);
             });
         }
 
         async function deletePhoto(id) {
-            if(confirm("사진을 삭제하시겠습니까?")) { 
-                await fetch(`${DB_BASE}/gallery/${id}.json`, { method: 'DELETE' }); 
-                loadGallery(); 
-            }
+            if(confirm("삭제?")) { await fetch(`${DB_BASE}/gallery/${id}.json`, { method: 'DELETE' }); loadGallery(); }
         }
     </script>
 </body>
