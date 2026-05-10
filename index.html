@@ -85,7 +85,8 @@
         const ENDPOINTS = {
             schedule: `${DB_BASE}/schedule.json`,
             fixed: `${DB_BASE}/fixed_attendance.json`,
-            gallery: `${DB_BASE}/gallery.json`
+            gallery: `${DB_BASE}/gallery.json`,
+            logs: `${DB_BASE}/running_logs.json
         };
 
         let selectedDates = [];
@@ -208,18 +209,93 @@
         // --- 3. 러닝 일지 (복구 완료) ---
         function showLog() {
             contentDiv.innerHTML = `
-                <h2>📖 과거 러닝 기록</h2>
-                <div class="box">
-                    <strong>제1회 정기러닝 (2026.03.23)</strong><br>
-                    참석: 고건우, 오지완, 김민형, 오동학, 양원아, 김효진<br>
-                    기록: 8km / 페이스 6:21/km
+                <h2>📖 크루 러닝 일지</h2>
+                <div class="box" style="background: white;">
+                    <h3>✍️ 오늘 나의 러닝 기록하기</h3>
+                    <div style="display: grid; gap: 10px; margin-bottom: 15px;">
+                        <div class="input-group">
+                            <input type="text" id="logName" placeholder="이름" style="flex: 0.3;">
+                            <input type="text" id="logDist" placeholder="거리 (ex: 5km)" style="flex: 0.3;">
+                            <input type="text" id="logPace" placeholder="페이스 (ex: 6:00)" style="flex: 0.4;">
+                        </div>
+                        <input type="text" id="logComment" placeholder="오늘 어떠셨나요? 한 줄 평을 남겨주세요!" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box;">
+                        <button onclick="submitLog()" style="padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">기록 등록하기</button>
+                    </div>
                 </div>
-                <div class="box">
-                    <strong>번개런 (2026.04.03)</strong><br>
-                    참석: 양원아, 김효진<br>
-                    기록: 5km / 페이스 6:30/km
+                <div id="logList">
+                    <p style="text-align: center; color: #666;">일지를 불러오는 중...</p>
                 </div>
             `;
+            loadLogs();
+        }
+
+        // 일지 제출 함수
+        async function submitLog() {
+            const name = document.getElementById('logName').value.trim();
+            const dist = document.getElementById('logDist').value.trim();
+            const pace = document.getElementById('logPace').value.trim();
+            const comment = document.getElementById('logComment').value.trim();
+
+            if(!name || !dist || !pace) return alert("이름, 거리, 페이스를 모두 입력해주세요!");
+
+            const logData = {
+                name,
+                dist,
+                pace,
+                comment,
+                date: new Date().toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                timestamp: Date.now()
+            };
+
+            await fetch(ENDPOINTS.logs, {
+                method: 'POST',
+                body: JSON.stringify(logData)
+            });
+
+            alert("오늘의 러닝 기록이 완료되었습니다! 수고하셨습니다.");
+            showLog(); // 화면 갱신
+        }
+
+        // 일지 불러오기 함수
+        async function loadLogs() {
+            const res = await fetch(ENDPOINTS.logs);
+            const data = await res.json();
+            const listDiv = document.getElementById('logList');
+            
+            if(!listDiv) return;
+            listDiv.innerHTML = "";
+
+            if(!data) {
+                listDiv.innerHTML = "<p style='text-align: center; color: #999; margin-top: 20px;'>아직 등록된 일지가 없습니다. 첫 일지의 주인공이 되어보세요!</p>";
+                return;
+            }
+
+            // 최신순 정렬 후 렌더링
+            Object.entries(data).reverse().forEach(([id, log]) => {
+                const logBox = document.createElement('div');
+                logBox.className = 'box';
+                logBox.style.borderLeft = "6px solid #03c75a";
+                logBox.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px;">
+                        <strong style="font-size: 1.1em;">${log.name} 크루원</strong>
+                        <span style="font-size: 0.85em; color: #888;">${log.date}</span>
+                    </div>
+                    <p style="margin: 5px 0;">🏃‍♂️ <b>기록:</b> ${log.dist} / <b>페이스:</b> ${log.pace}</p>
+                    <p style="margin: 10px 0; color: #444; font-style: italic;">"${log.comment}"</p>
+                    <div style="text-align: right;">
+                        <button onclick="deleteLog('${id}')" style="background: none; border: none; color: #e74c3c; cursor: pointer; font-size: 0.85em;">삭제</button>
+                    </div>
+                `;
+                listDiv.appendChild(logBox);
+            });
+        }
+
+        // 일지 삭제 함수
+        async function deleteLog(id) {
+            if(confirm("기록을 삭제하시겠습니까?")) {
+                await fetch(`${DB_BASE}/running_logs/${id}.json`, { method: 'DELETE' });
+                showLog();
+            }
         }
 
         // --- 4. 스케줄 투표 (복구 및 기능 추가) ---
