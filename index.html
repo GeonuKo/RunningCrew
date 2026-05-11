@@ -206,17 +206,25 @@
 
         // --- 3. 러닝 일지 (실시간 게시판) ---
         function showLog() {
+            // 오늘 날짜를 기본값으로 설정 (YYYY-MM-DD 형식)
+            const today = new Date().toISOString().split('T')[0];
+
             contentDiv.innerHTML = `
                 <h2>📖 크루 러닝 일지</h2>
                 <div class="box" style="background: white;">
                     <h3>✍️ 기록하기</h3>
-                    <div class="input-group">
-                        <input type="text" id="logName" placeholder="이름" style="flex:0.3;">
-                        <input type="text" id="logDist" placeholder="거리(km)" style="flex:0.3;">
-                        <input type="text" id="logPace" placeholder="페이스" style="flex:0.4;">
+                    <div style="display: grid; gap: 10px;">
+                        <div class="input-group">
+                            <input type="date" id="logDate" value="${today}" style="flex: 0.4; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                            <input type="text" id="logName" placeholder="이름" style="flex: 0.3;">
+                            <input type="text" id="logDist" placeholder="거리(km)" style="flex: 0.3;">
+                        </div>
+                        <div class="input-group">
+                            <input type="text" id="logPace" placeholder="페이스 (ex: 5:30)" style="flex: 0.3;">
+                            <input type="text" id="logComment" placeholder="오늘의 한 줄 평" style="flex: 0.7; padding: 12px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <button onclick="submitLog()" style="width: 100%; padding: 12px; background: #2c3e50; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">기록 등록하기</button>
                     </div>
-                    <input type="text" id="logComment" placeholder="한 줄 평" style="width:100%; padding:12px; margin:10px 0; border:1px solid #ddd; border-radius:8px; box-sizing:border-box;">
-                    <button onclick="submitLog()" style="width:100%; padding:12px; background:#2c3e50; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">기록 등록</button>
                 </div>
                 <div id="logList"></div>
             `;
@@ -224,16 +232,32 @@
         }
 
         async function submitLog() {
+            const dateInput = document.getElementById('logDate').value; // YYYY-MM-DD
             const name = document.getElementById('logName').value.trim();
             const dist = document.getElementById('logDist').value.trim();
             const pace = document.getElementById('logPace').value.trim();
             const comment = document.getElementById('logComment').value.trim();
-            if(!name || !dist) return alert("이름과 거리를 입력해주세요.");
+
+            if(!name || !dist || !dateInput) return alert("날짜, 이름, 거리는 필수 입력 항목입니다!");
+
+            // 표시 형식을 YYYY/MM/DD로 변환
+            const formattedDate = dateInput.replace(/-/g, '/');
+
+            const logData = {
+                date: formattedDate,
+                name: name,
+                dist: dist,
+                pace: pace,
+                comment: comment,
+                timestamp: new Date(dateInput).getTime() // 정렬을 위한 타임스탬프
+            };
 
             await fetch(ENDPOINTS.logs, {
                 method: 'POST',
-                body: JSON.stringify({ name, dist, pace, comment, date: new Date().toLocaleDateString(), timestamp: Date.now() })
+                body: JSON.stringify(logData)
             });
+
+            alert(`${formattedDate} 기록이 등록되었습니다!`);
             showLog();
         }
 
@@ -242,13 +266,31 @@
             const data = await res.json();
             const listDiv = document.getElementById('logList');
             if(!listDiv) return;
+            
             listDiv.innerHTML = "";
-            if(!data) return listDiv.innerHTML = "<p>첫 일지를 남겨보세요!</p>";
-            Object.entries(data).reverse().forEach(([id, log]) => {
-                const b = document.createElement('div'); b.className = 'box'; b.style.borderLeft = "6px solid #03c75a";
-                b.innerHTML = `<strong>${log.name}</strong> (${log.date})<br>🏃‍♂️ ${log.dist} / ${log.pace}<br><i>"${log.comment}"</i>
-                               <div style="text-align:right;"><button onclick="deleteLog('${id}')" style="color:red; border:none; background:none; cursor:pointer;">삭제</button></div>`;
-                listDiv.appendChild(b);
+            if(!data) return listDiv.innerHTML = "<p style='text-align:center; padding:20px; color:#999;'>첫 일지를 남겨보세요!</p>";
+
+            // 날짜/타임스탬프 내림차순 정렬 (최신순)
+            const sortedLogs = Object.entries(data).sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+            sortedLogs.forEach(([id, log]) => {
+                const logBox = document.createElement('div');
+                logBox.className = 'box';
+                logBox.style.borderLeft = "6px solid #03c75a";
+                logBox.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <span style="font-weight: bold; font-size: 1.1em; color: #2c3e50;">🏃‍♂️ ${log.name} 크루원</span>
+                        <span style="color: #666; font-size: 0.9em;">📅 ${log.date}</span>
+                    </div>
+                    <div style="background: #fff; padding: 10px; border-radius: 8px; margin: 5px 0;">
+                        <p style="margin: 0;"><b>기록:</b> ${log.dist}km | <b>페이스:</b> ${log.pace}</p>
+                        <p style="margin: 5px 0 0 0; color: #444;">"${log.comment}"</p>
+                    </div>
+                    <div style="text-align: right; margin-top: 5px;">
+                        <button onclick="deleteLog('${id}')" style="color: #e74c3c; border: none; background: none; cursor: pointer; font-size: 0.85em;">삭제</button>
+                    </div>
+                `;
+                listDiv.appendChild(logBox);
             });
         }
 
