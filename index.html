@@ -278,10 +278,14 @@
         }
 
         function getNext10Days() {
-            const d = []; const l = ['일','월','화','수','목','금','토'];
-            for(let i=1; i<=10; i++){
-                const t = new Date(); t.setDate(t.getDate()+i);
-                d.push(`${t.getMonth()+1}/${t.getDate()}(${l[t.getDay()]})`);
+            const d = []; 
+            const l = ['일','월','화','수','목','금','토'];
+            for(let i = 0; i < 10; i++) { // 1이 아닌 0부터 시작하여 '오늘'을 포함
+                const t = new Date(); 
+                t.setDate(t.getDate() + i);
+                const dayName = l[t.getDay()];
+                const dateString = `${t.getMonth() + 1}/${t.getDate()}(${dayName})`;
+                d.push(dateString);
             }
             return d;
         }
