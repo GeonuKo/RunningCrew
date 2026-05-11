@@ -146,7 +146,8 @@
 
         // --- 2. 맛집 리스트 ---
         function showFood() {
-            { 
+             const restaurants = [
+                { 
                     name: "취복루", 
                     menu: "꿔바로우, 양꼬치, 마라탕", 
                     addr: "서울 동작구 등용로 118 (노량진역-대방역 사이)", 
@@ -209,7 +210,8 @@
                     desc: "송리단길 맛집! 석촌호수 러닝 후 뜨끈한 국물로 마무리하세요.", 
                     link: "https://map.naver.com/p/entry/place/1145587166" 
                 }
-            ];
+            ];    
+            
             let html = `<h2>🍲 크루 추천 맛집</h2>`;
             restaurants.forEach(r => {
                 html += `<div class="box"><h3>${r.name}</h3><p>🍴 ${r.menu} / 📍 ${r.addr}</p><p>${r.desc}</p><a href="${r.link}" target="_blank">네이버 지도</a></div>`;
