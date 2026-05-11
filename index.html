@@ -305,10 +305,13 @@
                 <div class="vote-section">
                     <div id="bestDayAlert" class="best-day">집계 중...</div>
                     <div class="input-group">
-                        <input type="text" id="voterName" placeholder="이름 입력">
+                        <input type="text" id="voterName" placeholder="실명 입력">
                         <button onclick="submitSchedule()">투표 제출</button>
                     </div>
-                    <p class="info-text">💡 이름만 쓰고 제출하면 투표가 취소됩니다.</p>
+                    <p class="info-text" style="color: #666; font-size: 0.85em; margin-top: 5px;">
+                        ⚠️ <b>정회원 전용:</b> 등록된 크루원 성함으로만 투표가 가능합니다.<br>
+                        (양원아, 고건우, 오지완, 김효진, 오동학, 이시헌, 고성협, 고영준, 김민형)
+                    </p>
                     <div class="date-grid" id="dateGrid"></div>
                 </div>
             `;
@@ -344,18 +347,40 @@
 
         async function submitSchedule() {
             const name = document.getElementById('voterName').value.trim();
-            if(!name) return alert("이름을 입력하세요.");
+            
+            // --- 유효한 크루원 명단 설정 ---
+            const validCrews = ["양원아", "고건우", "오지완", "김효진", "오동학", "이시헌", "고성협", "고영준", "김민형"];
+            
+            if (!name) return alert("이름을 입력해주세요.");
+            
+            // 명단에 없는 이름인지 확인
+            if (!validCrews.includes(name)) {
+                return alert(`'${name}'님은 등록된 크루원 명단에 없습니다.\n정확한 실명으로 입력해주세요!`);
+            }
+
+            // 1. 기존 투표 데이터 확인 및 삭제 로직
             const res = await fetch(ENDPOINTS.schedule);
             const data = await res.json();
-            if(data) {
+            
+            if (data) {
                 const oldId = Object.keys(data).find(k => data[k].name === name);
-                if(oldId) await fetch(`${DB_BASE}/schedule/${oldId}.json`, { method: 'DELETE' });
+                if (oldId) {
+                    await fetch(`${DB_BASE}/schedule/${oldId}.json`, { method: 'DELETE' });
+                }
             }
-            if(selectedDates.length > 0) {
-                await fetch(ENDPOINTS.schedule, { method: 'POST', body: JSON.stringify({ name, dates: selectedDates }) });
-                alert("투표 완료!");
-            } else { alert("투표 취소 처리됨."); }
-            showSchedule();
+
+            // 2. 날짜를 선택한 경우에만 새로 등록
+            if (selectedDates.length > 0) {
+                await fetch(ENDPOINTS.schedule, { 
+                    method: 'POST', 
+                    body: JSON.stringify({ name, dates: selectedDates }) 
+                });
+                alert(`${name}님, 투표가 완료되었습니다!`);
+            } else {
+                alert(`${name}님의 투표가 취소(미참여) 처리되었습니다.`);
+            }
+
+            showSchedule(); 
         }
 
         async function loadSchedule() {
