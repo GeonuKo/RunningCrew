@@ -300,19 +300,13 @@
         
             getNext10Days().forEach(dateLabel => {
                 const pureDate = dateLabel.split('(')[0]; 
-                // 데이터가 없으면 null을 반환하도록 처리
-                const weather = (weatherData && weatherData[pureDate]) ? weatherData[pureDate] : null;
+                const weather = weatherData ? weatherData[pureDate] : null;
+                let weatherHtml = `<div style="height:55px; color:#ccc; font-size:0.7em; padding-top:15px;">데이터 없음</div>`;
                 
-                let weatherHtml = `<div style="height:55px; color:#ccc; font-size:0.7em; padding-top:15px;">예보 없음</div>`;
-                
-                // weather가 존재할 때만 내부 값에 접근
                 if(weather) {
-                    const maxPop = weather.maxPop || 0; // undefined 방지
-                    const rainStart = weather.rainStart;
-                    
-                    const rainInfo = maxPop >= 20 
-                        ? `<div style="color:#3498db; font-size:0.85em; font-weight:bold;">☔ ${maxPop}% (${rainStart}시~)</div>`
-                        : `<div style="color:#999; font-size:0.8em;">💧 ${maxPop}%</div>`;
+                    const rainInfo = weather.maxPop >= 20 
+                        ? `<div style="color:#3498db; font-size:0.85em; font-weight:bold;">☔ ${weather.maxPop}% (${weather.rainStart}시~)</div>`
+                        : `<div style="color:#999; font-size:0.8em;">💧 ${weather.maxPop}%</div>`;
         
                     weatherHtml = `
                     <div style="margin:5px 0;">
@@ -321,22 +315,6 @@
                         ${rainInfo}
                     </div>`;
                 }
-        
-                const item = document.createElement('div');
-                item.className = 'date-item';
-                item.style.minHeight = "140px";
-                item.innerHTML = `<span class="date-label">${dateLabel}</span>
-                                 ${weatherHtml}
-                                 <span class="count" id="count-${dateLabel}">0명</span>
-                                 <span class="voter-list" id="list-${dateLabel}"></span>`;
-                item.onclick = () => {
-                    item.classList.toggle('selected');
-                    if(selectedDates.includes(dateLabel)) selectedDates = selectedDates.filter(d => d !== dateLabel);
-                    else selectedDates.push(dateLabel);
-                };
-                grid.appendChild(item);
-            });
-        }
         
                 const item = document.createElement('div');
                 item.className = 'date-item';
