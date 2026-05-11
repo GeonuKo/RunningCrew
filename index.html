@@ -292,22 +292,33 @@
 
         async function renderDateGrid() {
             const grid = document.getElementById('dateGrid');
+            if(!grid) return;
+            grid.innerHTML = "<p style='text-align:center; width:100%;'>날씨 정보를 가져오는 중...</p>";
             const weatherData = await getWeatherData();
             selectedDates = [];
             grid.innerHTML = "";
-
+        
             getNext10Days().forEach(dateLabel => {
-                const pureDate = dateLabel.split('(')[0]; // "5/12"
+                const pureDate = dateLabel.split('(')[0]; 
                 const weather = weatherData ? weatherData[pureDate] : null;
+                let weatherHtml = `<div style="height:55px; color:#ccc; font-size:0.7em; padding-top:15px;">데이터 없음</div>`;
                 
-                const weatherHtml = weather ? `
-                    <div style="font-size:0.8em; color:#666; margin:5px 0;">
-                        <img src="https://openweathermap.org/img/wn/${weather.icon}.png" style="width:25px; vertical-align:middle;">
-                        ${weather.temp}°C
-                    </div>` : `<div style="height:35px; color:#ccc; font-size:0.7em;">-</div>`;
-
+                if(weather) {
+                    const rainInfo = weather.maxPop >= 20 
+                        ? `<div style="color:#3498db; font-size:0.85em; font-weight:bold;">☔ ${weather.maxPop}% (${weather.rainStart}시~)</div>`
+                        : `<div style="color:#999; font-size:0.8em;">💧 ${weather.maxPop}%</div>`;
+        
+                    weatherHtml = `
+                    <div style="margin:5px 0;">
+                        <img src="https://openweathermap.org/img/wn/${weather.icon}.png" style="width:30px; display:block; margin:0 auto;">
+                        <div style="font-size:0.9em; font-weight:bold;">${weather.temp}°C</div>
+                        ${rainInfo}
+                    </div>`;
+                }
+        
                 const item = document.createElement('div');
                 item.className = 'date-item';
+                item.style.minHeight = "140px"; // 높이 확보
                 item.innerHTML = `<span class="date-label">${dateLabel}</span>
                                  ${weatherHtml}
                                  <span class="count" id="count-${dateLabel}">0명</span>
